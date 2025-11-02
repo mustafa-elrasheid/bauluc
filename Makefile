@@ -1,9 +1,9 @@
 compile:
-	gcc main.c -o baulo
+	gcc src/main.c src/lexer.c src/parser.c -o bin/baulo
 run:
-	./baulo
+	./bin/baulo
 test:
-	./baulo hello.bul
+	./bin/baulo examples/hello.bul
 compile-test:
 	make compile
 	make test
