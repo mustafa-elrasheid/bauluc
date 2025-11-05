@@ -18,7 +18,8 @@ char* read_file(char* path){
 
 	fseek(file, 0L, SEEK_END);
 	file_size=ftell(file);
-	buffer = malloc(file_size);
+	buffer = malloc(file_size+1);
+	memset(buffer,0,file_size+1);
 	fseek(file, 0L, SEEK_SET);
 	fread(buffer, 1, file_size, file);
 
@@ -41,6 +42,7 @@ int main (int argc,char**argv ){
 
 	const char* keywords[35] = {"!","@","#","$","%","^","&","*","(",")","-","+","=","\t"," ","{","}","[","]","\"",":",";","'","\"","<",">",".",",","?","\\","|","/"};
 	keywords[34] = NULL;
+	
 	TokenVector* token_stack = tokenizer(text,  keywords);
 	printf("Tokens:{");
 	for(int x= 0; x < token_stack->length; x++){
@@ -48,8 +50,23 @@ int main (int argc,char**argv ){
 		printf(" \"%s\", ",token_stack->tokens[x]->token);
 	}
 	printf("}\n");
-	Token* magic_token = parse_expression(token_stack,0);
+	
+	Expression* magic_token = parse_expression(token_stack,0);
+	if(magic_token == NULL){
+		printf("Syntax Error\n");
+		return -1;
+	}
 	show_tree(magic_token,0);
+	free_expression(magic_token);
+	
+	for(int x= 0; x < token_stack->length; x++){
+		free(token_stack->tokens[x]->token);
+		free(token_stack->tokens[x]);
+	}
+	
+	free(token_stack->tokens);
+	free(token_stack);
+	
 	free(text);
 	return 0;
 }

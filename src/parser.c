@@ -10,71 +10,63 @@ Token* peek(TokenVector* tokensvec){
     return tokensvec->tokens[tokensvec->index];
 }
 
-Token* parse_expression(TokenVector* tokens,int min_bp){
-    Token* expr1 = next(tokens);
-    switch (expr1->type) {
-        case ATOM:
-            printf("atom: %s\n",expr1->token);
-            break;
-        default:
-            printf("bad token: %s\n",expr1->token);
-    };
-    while(1) {
-        Token* op = peek(tokens);
-        switch (op->type) {
-            case END_OF_FILE:
-                printf("end of file\n");
-                goto end;
-                break;
-            case OPERATOR:
-                printf("operator: %s\n",op->token);
-                break;
-            default:
-                printf("bad token: %s\n",expr1->token);
-        };
-        
-        int bind_power_left = op->binding_power_left, bind_power_right = op->binding_power_right;
-        if (bind_power_left < min_bp)
-            break;
-        
-        //In the video, `lexer.next()` is called BEFORE the if statement.
-        //It must be called AFTER the precedence check, because calling it too early
-        //would consume a token that shouldn't be parsed yet—leading to incorrect parse trees.
-        next(tokens);
-        Token* rhs = parse_expression(tokens, bind_power_right);
-        // TODO: problem might be here lol
-        expr1 = malloc(sizeof(Token));
-        expr1->type = EXPRESSION;
-        expr1->expr1 = expr1;
-        expr1->expr2 = rhs;
+Expression* parse_expression(TokenVector* tokens,int min_bp){
+    Token* token1 = next(tokens);
+    UniExpression* expr1 = malloc(sizeof(UniExpression));
+    expr1->type = UNARY;
+    expr1->token = token1;
+    if(token1->type != ATOM) {
+        printf("Unexpected token: %s\n", token1->token);
+        return NULL;
     }
-    end:
+    while(1){
+        Token* op = peek(tokens);
+        if(op->type != END_OF_FILE && op->type != OPERATOR){
+            printf("bad token: %s\n",op->token);
+            return NULL;
+        }
+        if (op->binding_power_left < min_bp) return expr1;
+        next(tokens);
+        Expression* rhs = parse_expression(tokens, op->binding_power_right);
+        if(rhs == NULL) return NULL;
+        Expression* temp_expr1 = expr1;
+        expr1 = malloc(sizeof(BinaryExpression));
+        expr1->type = BIN_EXPR;
+        ((BinaryExpression*)expr1)->expr1 = (Expression*)temp_expr1;
+        ((BinaryExpression*)expr1)->expr2 = rhs;
+        ((BinaryExpression*)expr1)->Operator = op;
+    }
     return expr1;
 }
 
-void show_tree(Token* node,int depth){
-    Token* expr1 = NULL;
-    Token* expr2 = NULL;
+void free_expression(Expression* node){
     switch (node->type) {
-        case EXPRESSION:
-            printf("(\n");
-            expr1 = node->expr1;
-            expr2 = node->expr2;
-            show_tree(expr1,depth+1);
-            show_tree(expr2,depth+1);
-            printf(")\n");
+        case UNARY:
+            free(node);
             break;
-        case ATOM:
-            printf("%s\n",node->token);
-            break;
-        case OPERATOR:
-            printf("%s\n",node->token);
-            break;
-        case END_OF_FILE:
-            printf("EOF\n");
+        case BIN_EXPR:
+            free_expression(((BinaryExpression*)node)->expr1);
+            free_expression(((BinaryExpression*)node)->expr2);
+            free(node);
             break;
         default:
             break;
     };
-    
+}
+
+void show_tree(Expression* node,int depth){
+    switch (node->type) {
+        case UNARY:
+            for(int i = 0; i < depth; i++) printf("  ");
+            printf("%s\n",((UniExpression*)node)->token->token);
+            break;
+        case BIN_EXPR:
+            for(int i = 0; i < depth; i++) printf("  ");
+            printf("Binary Expression (Operator: '%s'):\n",((BinaryExpression*)node)->Operator->token);
+            show_tree(((BinaryExpression*)node)->expr1,depth+1);
+            show_tree(((BinaryExpression*)node)->expr2,depth+1);
+            break;
+        default:
+            break;
+    };
 }

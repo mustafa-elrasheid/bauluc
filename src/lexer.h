@@ -8,17 +8,14 @@
 typedef enum{
     ATOM,
     OPERATOR,
-    EXPRESSION,
     END_OF_FILE
 }TokenType;
 
 typedef struct{
     char* token;
     TokenType type;
-    uint8_t binding_power_left;
-    uint8_t binding_power_right;
-    struct Token* expr1;
-    struct Token* expr2;
+    int binding_power_left;
+    int binding_power_right;
 }Token;
 
 typedef struct{

@@ -2,10 +2,14 @@
 
 Token* create_token(char* token_str,TokenType type){
 	Token* token = malloc(sizeof(Token));
-	token->token = strdup(token_str);
+	token->token = token_str;
 	token->binding_power_left = 10;
 	token->binding_power_right = 11;
 	token->type = type;
+	if(type == END_OF_FILE){
+		token->binding_power_left = -10;
+		token->binding_power_right = -10;
+	}
 	return token;
 }
 
@@ -41,7 +45,7 @@ int count_tokens(const char* text, const char** keywords){
 }
 
 TokenVector* tokenizer(const char* text,const char** keywords){
-	Token** tokens = malloc((count_tokens(text,keywords)+1)*sizeof(Token));
+	Token** tokens = malloc((count_tokens(text,keywords)+1)*sizeof(Token*));
 	int token_count = 0;
 	for(int index = 0; text[index] != '\0'; index++, token_count++){
 		const char* keyword = check_keywords(text+index, keywords);
@@ -58,6 +62,6 @@ TokenVector* tokenizer(const char* text,const char** keywords){
 	result->tokens = tokens;
 	result->index = 0;
 	result->length = token_count+1;
-	result->tokens[token_count] = create_token("EOF",END_OF_FILE);
+	result->tokens[token_count] = create_token(strdup("EOF"),END_OF_FILE);
 	return result;
 }
