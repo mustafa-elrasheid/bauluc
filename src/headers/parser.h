@@ -8,15 +8,15 @@ enum ExpressionType{
 struct Expression{
     ExpressionType type;
     union{
-        Token* token;
+        const Token* token;
         struct{
-            Token* Operator;
+            const Token* Operator;
             Expression* expr1;
             Expression* expr2;
         };
     };
     Expression(TokenVector* tokens,int min_bp);
-    Expression(Token* token);
+    Expression(const Token* token);
     ~Expression();
     void log(int depth);
 };

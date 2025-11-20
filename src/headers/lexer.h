@@ -31,7 +31,7 @@ struct TokenVector{
     int length;
     TokenVector(const char* text,const char** keywords);
     ~TokenVector();
-    Token* next();
-    Token* peek();
+    const Token* next();
+    const Token* peek();
     void log();
 };

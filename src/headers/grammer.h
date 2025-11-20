@@ -10,7 +10,7 @@ struct GrammerRule{
     const char* ExprIdentifier;
     GrammerRuleType type;
     union{
-        Token* token;
+        const Token* token;
         const char** ExprIdentifiers;
     };
 };

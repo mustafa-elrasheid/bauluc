@@ -66,13 +66,13 @@ TokenVector::TokenVector(const char* text,const char** keywords){
 	this->tokens[token_count] = new Token(strdup("EOF"),END_OF_FILE);
 }
 
-Token* TokenVector::next(){
+const Token* TokenVector::next(){
     Token* value = this->tokens[this->index];
     this->index++;
     return value;
 }
 
-Token* TokenVector::peek(){
+const Token* TokenVector::peek(){
     return this->tokens[this->index];
 }
 
