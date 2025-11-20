@@ -45,7 +45,7 @@ Expression::~Expression(){
     };
 }
 
-void Expression::show_tree(int depth){
+void Expression::log(int depth){
     switch (this->type) {
         case UNARY:
             for(int i = 0; i < depth; i++) printf("  ");
@@ -54,8 +54,8 @@ void Expression::show_tree(int depth){
         case BIN_EXPR:
             for(int i = 0; i < depth; i++) printf("  ");
             printf("Binary Expression (Operator: '%s'):\n",(this)->Operator->token);
-            this->expr1->show_tree(depth+1);
-            this->expr2->show_tree(depth+1);
+            this->expr1->log(depth+1);
+            this->expr2->log(depth+1);
             break;
         default:
             break;

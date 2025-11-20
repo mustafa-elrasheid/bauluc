@@ -18,6 +18,6 @@ struct Expression{
     Expression(TokenVector* tokens,int min_bp);
     Expression(Token* token);
     ~Expression();
-    void show_tree(int depth);
+    void log(int depth);
 };
 

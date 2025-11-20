@@ -1,26 +1,5 @@
 #include "headers/lexer.h"
 
-Token::Token(char* token_str,TokenType type){
-	this->token = token_str;
-	this->binding_power_left = 10;
-	this->binding_power_right = 11;
-	this->type = type;
-	if(type == END_OF_FILE){
-		this->binding_power_left = -10;
-		this->binding_power_right = -10;
-	}
-}
-
-Token* TokenVector::next(){
-    Token* value = this->tokens[this->index];
-    this->index++;
-    return value;
-}
-
-Token* TokenVector::peek(){
-    return this->tokens[this->index];
-}
-
 char* create_str(const char* str1, int length){
 	char* new_str = (char*)malloc(length+1);
 	strncpy(new_str, str1, length);
@@ -52,6 +31,21 @@ int count_tokens(const char* text, const char** keywords){
 	return token_count;
 }
 
+Token::Token(char* token_str,TokenType type){
+	this->token = token_str;
+	this->binding_power_left = 10;
+	this->binding_power_right = 11;
+	this->type = type;
+	if(type == END_OF_FILE){
+		this->binding_power_left = -10;
+		this->binding_power_right = -10;
+	}
+}
+
+Token::~Token(){
+	free(this->token);
+}
+
 TokenVector::TokenVector(const char* text,const char** keywords){
 	Token** tokens = (Token**)malloc((count_tokens(text,keywords)+1)*sizeof(Token*));
 	int token_count = 0;
@@ -70,4 +64,33 @@ TokenVector::TokenVector(const char* text,const char** keywords){
 	this->index = 0;
 	this->length = token_count+1;
 	this->tokens[token_count] = new Token(strdup("EOF"),END_OF_FILE);
+}
+
+Token* TokenVector::next(){
+    Token* value = this->tokens[this->index];
+    this->index++;
+    return value;
+}
+
+Token* TokenVector::peek(){
+    return this->tokens[this->index];
+}
+
+TokenVector::~TokenVector(){
+	for(int x= 0; x < this->length; x++){
+		delete this->tokens[x];
+	}
+	free(this->tokens);
+}
+
+void TokenVector::log(){
+	printf("[");
+	for(int x= 0; x < this->length; x++){
+		const char * token = this->tokens[x]->token;
+		if(token[0] == '\n' || token[0] == '\t' || token[0] == ' ')
+			continue;
+		if(x == length-1) printf("\"%s\"",token);
+		else printf("\"%s\", ",token);
+	}
+	printf("]\n");
 }

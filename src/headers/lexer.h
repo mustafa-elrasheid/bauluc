@@ -22,6 +22,7 @@ struct Token{
     int binding_power_left;
     int binding_power_right;
     Token(char* token_str, TokenType type);
+    ~Token();
 };
 
 struct TokenVector{
@@ -29,6 +30,8 @@ struct TokenVector{
     int index;
     int length;
     TokenVector(const char* text,const char** keywords);
+    ~TokenVector();
     Token* next();
     Token* peek();
+    void log();
 };
