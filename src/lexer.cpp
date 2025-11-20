@@ -1,20 +1,28 @@
-#include "lexer.h"
+#include "headers/lexer.h"
 
-Token* create_token(char* token_str,TokenType type){
-	Token* token = malloc(sizeof(Token));
-	token->token = token_str;
-	token->binding_power_left = 10;
-	token->binding_power_right = 11;
-	token->type = type;
+Token::Token(char* token_str,TokenType type){
+	this->token = token_str;
+	this->binding_power_left = 10;
+	this->binding_power_right = 11;
+	this->type = type;
 	if(type == END_OF_FILE){
-		token->binding_power_left = -10;
-		token->binding_power_right = -10;
+		this->binding_power_left = -10;
+		this->binding_power_right = -10;
 	}
-	return token;
+}
+
+Token* TokenVector::next(){
+    Token* value = this->tokens[this->index];
+    this->index++;
+    return value;
+}
+
+Token* TokenVector::peek(){
+    return this->tokens[this->index];
 }
 
 char* create_str(const char* str1, int length){
-	char* new_str = malloc(length+1);
+	char* new_str = (char*)malloc(length+1);
 	strncpy(new_str, str1, length);
 	new_str[length] = '\0';
 	return new_str;
@@ -44,24 +52,22 @@ int count_tokens(const char* text, const char** keywords){
 	return token_count;
 }
 
-TokenVector* tokenizer(const char* text,const char** keywords){
-	Token** tokens = malloc((count_tokens(text,keywords)+1)*sizeof(Token*));
+TokenVector::TokenVector(const char* text,const char** keywords){
+	Token** tokens = (Token**)malloc((count_tokens(text,keywords)+1)*sizeof(Token*));
 	int token_count = 0;
 	for(int index = 0; text[index] != '\0'; index++, token_count++){
 		const char* keyword = check_keywords(text+index, keywords);
 		if(keyword != NULL){
-			tokens[token_count] = create_token(create_str(keyword, strlen(keyword)),OPERATOR);
+			tokens[token_count] = new Token(create_str(keyword, strlen(keyword)),OPERATOR);
 			continue;
 		}
 		int word_length = 0;
 		for(int y = 0; !check_keywords(text+index+y, keywords); y++) word_length++;
-		tokens[token_count] = create_token(create_str(text+index, word_length),ATOM);
+		tokens[token_count] = new Token(create_str(text+index, word_length),ATOM);
 		index += word_length-1;
 	}
-	TokenVector* result = malloc(sizeof(TokenVector));
-	result->tokens = tokens;
-	result->index = 0;
-	result->length = token_count+1;
-	result->tokens[token_count] = create_token(strdup("EOF"),END_OF_FILE);
-	return result;
+	this->tokens = tokens;
+	this->index = 0;
+	this->length = token_count+1;
+	this->tokens[token_count] = new Token(strdup("EOF"),END_OF_FILE);
 }

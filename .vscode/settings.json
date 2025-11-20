@@ -4,6 +4,7 @@
         "stdint.h": "c",
         "stdio.h": "c",
         "stdlib.h": "c",
-        "parser.h": "c"
+        "parser.h": "c",
+        "type_traits": "cpp"
     }
 }
