@@ -46,7 +46,7 @@ Token::~Token(){
 	free(this->token);
 }
 
-TokenVector::TokenVector(const char* text,const char** keywords){
+TokenList::TokenList(const char* text,const char** keywords){
 	Token** tokens = (Token**)malloc((count_tokens(text,keywords)+1)*sizeof(Token*));
 	int token_count = 0;
 	for(int index = 0; text[index] != '\0'; index++, token_count++){
@@ -66,24 +66,23 @@ TokenVector::TokenVector(const char* text,const char** keywords){
 	this->tokens[token_count] = new Token(strdup("EOF"),END_OF_FILE);
 }
 
-const Token* TokenVector::next(){
+const Token* TokenList::next(){
     Token* value = this->tokens[this->index];
     this->index++;
     return value;
 }
 
-const Token* TokenVector::peek(){
+const Token* TokenList::peek(){
     return this->tokens[this->index];
 }
 
-TokenVector::~TokenVector(){
-	for(int x= 0; x < this->length; x++){
+TokenList::~TokenList(){
+	for(int x= 0; x < this->length; x++)
 		delete this->tokens[x];
-	}
 	free(this->tokens);
 }
 
-void TokenVector::log(){
+void TokenList::log(){
 	printf("[");
 	for(int x= 0; x < this->length; x++){
 		const char * token = this->tokens[x]->token;

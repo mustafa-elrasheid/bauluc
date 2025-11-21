@@ -1,23 +1,33 @@
+#pragma once
 #include "lexer.h"
+#include "grammer.h"
 
 enum ExpressionType{
-    BIN_EXPR,
+    COMP,
     UNARY
 };
 
+struct ExpressionList;
+
 struct Expression{
     ExpressionType type;
+    const char* Identifier;
     union{
         const Token* token;
-        struct{
-            const Token* Operator;
-            Expression* expr1;
-            Expression* expr2;
-        };
+        ExpressionList* expressions;
     };
-    Expression(TokenVector* tokens,int min_bp);
-    Expression(const Token* token);
+    Expression(const Token* token,const char* Identifier);
+    Expression(ExpressionList* expressions, const char* Identifier);
     ~Expression();
     void log(int depth);
+    bool match_expression(GrammerRule* grammer_rule);
 };
 
+struct ExpressionList{
+    Expression** expressions;
+    int length;
+    ExpressionList(TokenList* tokens, GrammerRuleList* grammer_rules);
+    ExpressionList(Expression** exprs, int count);
+    void reduce(GrammerRuleList* grammer_rules);
+    void log();
+};

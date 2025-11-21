@@ -25,12 +25,12 @@ struct Token{
     ~Token();
 };
 
-struct TokenVector{
+struct TokenList{
     Token** tokens;
     int index;
     int length;
-    TokenVector(const char* text,const char** keywords);
-    ~TokenVector();
+    TokenList(const char* text,const char** keywords);
+    ~TokenList();
     const Token* next();
     const Token* peek();
     void log();

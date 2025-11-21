@@ -3,7 +3,7 @@
 
 enum GrammerRuleType{
     TOKEN,
-    COMP
+    LIST,
 };
 
 struct GrammerRule{
@@ -11,6 +11,18 @@ struct GrammerRule{
     GrammerRuleType type;
     union{
         const Token* token;
-        const char** ExprIdentifiers;
+        struct{
+            const char** ExprIdentifiers;
+            int length;
+        };
     };
+    GrammerRule(const char* expr_identifier, Token* token);
+    GrammerRule(const char* expr_identifier, const char** ExprIdentifiers, int count);
+};
+
+struct GrammerRuleList{
+    int length;
+    GrammerRule** rules;
+    GrammerRuleList(GrammerRule** _rules, int _length);
+    ~GrammerRuleList();
 };
