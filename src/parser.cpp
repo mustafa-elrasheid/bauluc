@@ -21,11 +21,11 @@ Expression::~Expression(){
 void Expression::log(int depth){
     if(this->type == UNARY){
         for(int i = 0; i < depth; i++) printf("\t");
-        printf("Token: %s (Identifier:%s)\n",(this)->token->token,this->Identifier);
+        printf("Token: \"%s\" (Identifier:\"%s\")\n",(this)->token->token,this->Identifier);
         return;
     }
     for(int i = 0; i < depth; i++) printf("\t");
-    printf("Expression (Identifier: '%s'):\n",(this)->Identifier);
+    printf("Expression (Identifier: \"%s\"):\n",(this)->Identifier);
     for(int x = 0; x < this->expressions->length; x++)
         this->expressions->expressions[x]->log(depth+1);
 }
@@ -35,7 +35,7 @@ bool Expression::match_expression(GrammerRule* grammer_rule){
     if(grammer_rule->type == LIST)return false;
     if(this->token->type != grammer_rule->token->type) return false;
     if(this->token->type == OPERATOR && !strcmp(this->token->token, grammer_rule->token->token))return true;
-    if(this->token->type == ATOM && !strcmp("ANY", grammer_rule->token->token))return true;
+    if(this->token->type == ATOM && !strcmp("NUM", grammer_rule->token->token))return true;
     return false;
 }
 

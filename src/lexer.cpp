@@ -31,8 +31,8 @@ int count_tokens(const char* text, const char** keywords){
 	return token_count;
 }
 
-Token::Token(char* token_str,TokenType type){
-	this->token = token_str;
+Token::Token(const char* token_str,TokenType type){
+	this->token = strdup(token_str);
 	this->binding_power_left = 10;
 	this->binding_power_right = 11;
 	this->type = type;
@@ -52,18 +52,20 @@ TokenList::TokenList(const char* text,const char** keywords){
 	for(int index = 0; text[index] != '\0'; index++, token_count++){
 		const char* keyword = check_keywords(text+index, keywords);
 		if(keyword != NULL){
-			tokens[token_count] = new Token(create_str(keyword, strlen(keyword)),OPERATOR);
+			tokens[token_count] = new Token(keyword,OPERATOR);
 			continue;
 		}
 		int word_length = 0;
 		for(int y = 0; !check_keywords(text+index+y, keywords); y++) word_length++;
-		tokens[token_count] = new Token(create_str(text+index, word_length),ATOM);
+		char* atom_str = create_str(text+index, word_length);
+		tokens[token_count] = new Token(atom_str,ATOM);
+		free(atom_str);
 		index += word_length-1;
 	}
 	this->tokens = tokens;
 	this->index = 0;
 	this->length = token_count+1;
-	this->tokens[token_count] = new Token(strdup("EOF"),END_OF_FILE);
+	this->tokens[token_count] = new Token("EOF",END_OF_FILE);
 }
 
 const Token* TokenList::next(){
@@ -92,4 +94,11 @@ void TokenList::log(){
 		else printf("\"%s\", ",token);
 	}
 	printf("]\n");
+}
+
+void TokenList::flip_to_operator(const char** keywords){
+	for(int x = 0; x < this->length; x++){
+		Token* token = this->tokens[x];
+		if(check_keywords(token->token,keywords))token->type = OPERATOR;
+	}
 }

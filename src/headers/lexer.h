@@ -21,7 +21,7 @@ struct Token{
     TokenType type;
     int binding_power_left;
     int binding_power_right;
-    Token(char* token_str, TokenType type);
+    Token(const char* token_str, TokenType type);
     ~Token();
 };
 
@@ -34,4 +34,5 @@ struct TokenList{
     const Token* next();
     const Token* peek();
     void log();
+    void flip_to_operator(const char** keywords);
 };
