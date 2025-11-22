@@ -13,6 +13,7 @@ struct ExpressionList;
 struct Expression{
     ExpressionType type;
     const char* Identifier;
+    GrammerRule* matched_rule;
     union{
         const Token* token;
         ExpressionList* expressions;

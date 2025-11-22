@@ -40,7 +40,7 @@ int main (int argc,char**argv ){
 	token_stack->flip_to_operator(keywords2);
 
 	GrammerRuleList* grammer_rules = new GrammerRuleList(
-		new GrammerRule*[62]{
+		new GrammerRule*[70]{
 			/* keywords */
 			// functions
 			new GrammerRule("FUNCTION",            new Token("function",OPERATOR)),
@@ -91,11 +91,11 @@ int main (int argc,char**argv ){
 			/* Identifiers*/
 			new GrammerRule("Expression",new Token("NUM",ATOM)),
 			new GrammerRule("Expression",new Token("STR",ATOM)),
-			// strings should be there
+			//strings should be there
 			/* Expressions*/
 			new GrammerRule("Expression",new const char* [3]{"ROUND_BRACKET_OPEN","Expression","ROUND_BRACKET_CLOSE"},3),
-			//new GrammerRule("Expression",new const char* [4]{"Expression","SQWAR_BRACKET_START","Expression","SQWAR_BRACKET_END"},4),
-			//new GrammerRule("Expression",new const char* [4]{"Expression","ROUND_BRACKET_START","ExpressionsOption","ROUND_BRACKET_END"},4),
+			new GrammerRule("Expression",new const char* [4]{"Expression","SQWAR_BRACKET_START","Expression","SQWAR_BRACKET_END"},4),
+			new GrammerRule("Expression",new const char* [4]{"Expression","ROUND_BRACKET_START","ExpressionsOption","ROUND_BRACKET_END"},4),
 			new GrammerRule("Expression",new const char* [3]{"Expression","MODULO","Expression"},3),
 			new GrammerRule("Expression",new const char* [3]{"Expression","EQUAL","Expression"},3),
 			new GrammerRule("Expression",new const char* [3]{"Expression","IS_EQUAL","Expression"},3),
@@ -114,12 +114,12 @@ int main (int argc,char**argv ){
 			new GrammerRule("Expression",new const char* [3]{"Expression","DIV","Expression"},3),
 			new GrammerRule("Expression",new const char* [3]{"Expression","PLUS","Expression"},3),
 			new GrammerRule("Expression",new const char* [3]{"Expression","SUB","Expression"},3),
-			//new GrammerRule("Expression",new const char* [2]{"BIT_NOT","Expression"},2),
-			//new GrammerRule("Expression",new const char* [2]{"LOGIC_NOT","Expression"},2),
-			//new GrammerRule("Expression",new const char* [2]{"SUB","Expression"},2),
-			//// pointers
-			//new GrammerRule("Expression",new const char* [2]{"STAR","Expression"},2),
-			//new GrammerRule("Expression",new const char* [2]{"AMPERSAND","Expression"},2),
+			new GrammerRule("Expression",new const char* [2]{"BIT_NOT","Expression"},2),
+			new GrammerRule("Expression",new const char* [2]{"LOGIC_NOT","Expression"},2),
+			new GrammerRule("Expression",new const char* [2]{"SUB","Expression"},2),
+			// pointers
+			new GrammerRule("Expression",new const char* [2]{"STAR","Expression"},2),
+			new GrammerRule("Expression",new const char* [2]{"AMPERSAND","Expression"},2),
 			/* Statements */
 			new GrammerRule("Statement",new const char* [3]{"RETURN","Expression","LINE_END"},3),
 			new GrammerRule("Statement",new const char* [3]{"IF","Expression","TWO_DOTS"},3),
@@ -127,16 +127,16 @@ int main (int argc,char**argv ){
 			new GrammerRule("Statement",new const char* [6]{"VAR","Expression","Expression","EQUAL","Expression","LINE_END"},6),
 			new GrammerRule("Statement",new const char* [2]{"Expression","LINE_END"},2),
 			/* Structure */
-			//new GrammerRule("Statements",new const char* [1]{"Statement"},1,true),
+			new GrammerRule("Statements",new const char* [1]{"Statement"},1,true),
+			//new GrammerRule("Functions",new const char* [1]{"Function",1,true}),
 		},
-		62
+		70
 	);
 
 	ExpressionList* exprs_list = new ExpressionList(token_stack,grammer_rules);
 	for(int x = 0; exprs_list->length != 1 && x < 200; x++){
 		exprs_list->reduce(grammer_rules);
 	}
-	
 	exprs_list->log();
 	
 	delete grammer_rules;
