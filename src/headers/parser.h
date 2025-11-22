@@ -1,6 +1,7 @@
 #pragma once
 #include "lexer.h"
 #include "grammer.h"
+#include "ctype.h"
 
 enum ExpressionType{
     COMP,

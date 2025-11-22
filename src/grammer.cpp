@@ -4,6 +4,7 @@ GrammerRule::GrammerRule(const char* expr_identifier, Token* token){
     this->ExprIdentifier = expr_identifier;
     this->token = token;
     this->type = TOKEN;
+    this->repeat = false;
 }
 
 GrammerRule::GrammerRule(const char* expr_identifier, const char** ExprIdentifiers, int count){
@@ -11,6 +12,15 @@ GrammerRule::GrammerRule(const char* expr_identifier, const char** ExprIdentifie
     this->ExprIdentifiers = ExprIdentifiers;
     this->type = LIST;
     this->length = count;
+    this->repeat = false;
+}
+
+GrammerRule::GrammerRule(const char* expr_identifier, const char** ExprIdentifiers, int count, bool rep){
+    this->ExprIdentifier = expr_identifier;
+    this->ExprIdentifiers = ExprIdentifiers;
+    this->type = LIST;
+    this->length = count;
+    this->repeat = rep;
 }
 
 GrammerRuleList::GrammerRuleList(GrammerRule** _rules, int _length){
