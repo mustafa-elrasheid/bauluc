@@ -53,6 +53,7 @@ TokenList::TokenList(const char* text,const char** keywords){
 		const char* keyword = check_keywords(text+index, keywords);
 		if(keyword != NULL){
 			tokens[token_count] = new Token(keyword,OPERATOR);
+			index+=strlen(keyword)-1;
 			continue;
 		}
 		int word_length = 0;
@@ -100,5 +101,21 @@ void TokenList::flip_to_operator(const char** keywords){
 	for(int x = 0; x < this->length; x++){
 		Token* token = this->tokens[x];
 		if(check_keywords(token->token,keywords))token->type = OPERATOR;
+	}
+}
+
+void TokenList::remove_whitespace(){
+	for(int x = 0; x < this->length; x++){
+		Token* token = this->tokens[x];
+		const char* keywords[4] = {" ","\t","\n",NULL};
+		if(check_keywords(token->token,keywords)!=NULL){
+			memcpy(
+				&this->tokens[x],
+				&this->tokens[x+1],
+				sizeof(Token*)*(this->length-x-1)
+			);
+			this->length-=1;
+			x-=1;
+		}
 	}
 }

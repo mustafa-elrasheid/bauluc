@@ -39,7 +39,7 @@ bool Expression::match_expression(GrammerRule* grammer_rule){
     if(
         (this->token->type == OPERATOR && !strcmp(this->token->token, grammer_rule->token->token)) ||
         (this->token->type == ATOM && !strcmp("NUM", grammer_rule->token->token) && isdigit(this->token->token[0])) ||
-        (this->token->type == ATOM && !strcmp("STR", grammer_rule->token->token) && isdigit(this->token->token[0]))
+        (this->token->type == ATOM && !strcmp("STR", grammer_rule->token->token) && !isdigit(this->token->token[0]))
     )return true;
     return false;
 }
@@ -47,7 +47,7 @@ bool Expression::match_expression(GrammerRule* grammer_rule){
 ExpressionList::ExpressionList(TokenList* tokens, GrammerRuleList* grammer_rules){
     this->expressions = (Expression**) malloc(sizeof(Expression*)*tokens->length);
     this->length = tokens->length-1;
-    for(int x = 0; x < tokens->length; x++){
+    for(int x = 0; x < tokens->length-1; x++){
         Expression* expr = new Expression(tokens->tokens[x],"");
         for(int i = 0; i < grammer_rules->length; i++)
             if(expr->match_expression(grammer_rules->rules[i])){
@@ -55,6 +55,7 @@ ExpressionList::ExpressionList(TokenList* tokens, GrammerRuleList* grammer_rules
                 expr->Identifier = grammer_rules->rules[i]->ExprIdentifier;
                 break;
             }
+        if(expressions[x] != expr) printf("no token to expression match found\n");
     }
 }
 
@@ -85,7 +86,7 @@ void ExpressionList::reduce(GrammerRuleList* grammer_rules){
                         ix++;
                         expr_count = rule->length*ix;
                     }
-                }while(rule->repeat && (expr_count)+i < this->length && ix != ix);
+                }while(rule->repeat && (expr_count)+i < this->length && ix != xi);
                 if(ix==0) continue;
                 Expression** exprs = (Expression**) malloc(sizeof(Expression*)*expr_count);
                 memcpy(

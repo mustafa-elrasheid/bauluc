@@ -35,4 +35,5 @@ struct TokenList{
     const Token* peek();
     void log();
     void flip_to_operator(const char** keywords);
+    void remove_whitespace();
 };
