@@ -31,21 +31,23 @@ int main (int argc,char**argv ){
 
 	char* text = read_file(argv[1]);
 	if(text == NULL) return -1;
+	printf("file:\n%s\n",text);
 
 	const char* keywords[35]  = {"=>","!","@","#","$","%","^","&","*","(",")","-","+","=","\t"," ","{","}","[","]","\"",":",";","'","\"","<",">",".",",","?","\\","|","/",NULL};
 	const char* keywords2[]  = {"function","return","if","while","var","else","import","from","as",NULL};
 
 	TokenList* token_stack = new TokenList(text, keywords);
+	token_stack->offside("\t","{","}");
 	token_stack->remove_whitespace();
-	token_stack->log();
 	token_stack->flip_to_operator(keywords2);
+	token_stack->log();
 
 	GrammerRuleList* grammer_rules = new GrammerRuleList(
 		new GrammerRule*[86]{
 			/* keywords */
 			// functions
 			new GrammerRule("FUNCTION",            new Token("function",OPERATOR)),
-			new GrammerRule("RETURN",             new Token("return",OPERATOR)),
+			new GrammerRule("RETURN",              new Token("return",OPERATOR)),
 			// control flow
 			new GrammerRule("IF",                  new Token("if",OPERATOR)),
 			new GrammerRule("WHILE",               new Token("while",OPERATOR)),
@@ -135,23 +137,22 @@ int main (int argc,char**argv ){
 			new GrammerRule("Expression",  new const char* [2]{"AMPERSAND","Expression"},2),
 			/* Statements */
 			new GrammerRule("Statement",   new const char* [3]{"RETURN","Expression","LINE_END"},3),
-			new GrammerRule("Statement",   new const char* [4]{"IF","Expression","TWO_DOTS","Statement"},4),
-			new GrammerRule("Statement",   new const char* [4]{"WHILE","Expression","TWO_DOTS","Statement"},4),
+			new GrammerRule("Statement",   new const char* [4]{"IF","Expression","COLON","Statement"},4),
+			new GrammerRule("Statement",   new const char* [4]{"WHILE","Expression","COLON","Statement"},4),
 			new GrammerRule("Statement",   new const char* [6]{"VAR","Expression","Expression","EQUAL","Expression","LINE_END"},6),
 			new GrammerRule("Statement",   new const char* [2]{"Expression","LINE_END"},2),
 			new GrammerRule("Statement",   new const char* [3]{"CURLY_BRACKET_OPEN","Statements","CURLY_BRACKET_CLOSE"},3),
 			/* Structure */
+			new GrammerRule("Function",    new const char* [2]{"FunctionDef","Statement"},2),
 			new GrammerRule("Statements",  new const char* [1]{"Statement"},1,true),
 			new GrammerRule("Functions",   new const char* [1]{"Function"},1,true),
-			new GrammerRule("Function",    new const char* [2]{"FunctionDef","Statements"},2),
 		},
 		86
 	);
 
 	ExpressionList* exprs_list = new ExpressionList(token_stack,grammer_rules);
-	while(exprs_list->length != 1){
+	while(exprs_list->length != 1)
 		exprs_list->reduce(grammer_rules);
-	}
 	exprs_list->log();
 	
 	delete grammer_rules;

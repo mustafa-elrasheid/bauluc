@@ -119,3 +119,32 @@ void TokenList::remove_whitespace(){
 		}
 	}
 }
+
+void TokenList::offside(const char* whitespace, const char* indent, const char* dedent){
+	const char* keywords[2] = {whitespace,NULL};
+	int prev_tab_count = 0;
+	for(int x = 0; x < this->length; x++){
+		const char* newline[2] = {"\n",NULL};
+		if(!check_keywords(this->tokens[x]->token,newline))continue;
+		int tab_count = 0;
+		for(int i = x+1; i < this->length; x++,i++){
+			Token* token = this->tokens[i];
+			if(check_keywords(token->token,keywords)==NULL)break;
+			tab_count++;
+		}
+		if(prev_tab_count < tab_count)this->insert(new Token(indent,OPERATOR),x);
+		if(prev_tab_count > tab_count)this->insert(new Token(dedent,OPERATOR),x);
+		prev_tab_count = tab_count;
+	}
+}
+
+void TokenList::insert(Token* token, int index){
+	this->tokens = (Token**)realloc(this->tokens,sizeof(Token*)*(this->length+1));
+	memcpy(
+		&this->tokens[index+1],
+		&this->tokens[index],
+		sizeof(Token*)*(this->length-index)
+	);
+	this->tokens[index] = token;
+	this->length+=1;
+}

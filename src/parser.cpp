@@ -105,6 +105,9 @@ void ExpressionList::reduce(GrammerRuleList* grammer_rules){
                     &this->expressions[i+expr_count],
                     sizeof(Expression*)*(this->length-i-1)
                 );
+                ii=0;
+                rule=grammer_rules->rules[ii];
+                i=0;
             }
         }
         if(old_length == this->length)x++;

@@ -36,4 +36,6 @@ struct TokenList{
     void log();
     void flip_to_operator(const char** keywords);
     void remove_whitespace();
+    void offside(const char* whitespace, const char* indent, const char* dedent);
+    void insert(Token* token, int index);
 };
