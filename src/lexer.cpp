@@ -132,10 +132,12 @@ void TokenList::offside(const char* whitespace, const char* indent, const char* 
 			if(check_keywords(token->token,keywords)==NULL)break;
 			tab_count++;
 		}
-		if(prev_tab_count < tab_count)this->insert(new Token(indent,OPERATOR),x);
-		if(prev_tab_count > tab_count)this->insert(new Token(dedent,OPERATOR),x);
+		if(check_keywords(this->tokens[x+tab_count+1]->token,newline))continue;
+		for(int i = prev_tab_count; i < tab_count; i++)this->insert(new Token(indent,OPERATOR),x);
+		for(int i = prev_tab_count; i > tab_count; i--)this->insert(new Token(dedent,OPERATOR),x);
 		prev_tab_count = tab_count;
 	}
+	for(int i = 0; i < prev_tab_count; i++)this->insert(new Token(dedent,OPERATOR),this->length-1);
 }
 
 void TokenList::insert(Token* token, int index){

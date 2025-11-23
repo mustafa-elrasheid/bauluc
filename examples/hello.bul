@@ -1,4 +1,7 @@
 function main () => int:
+
 	if 8:
-		return 0;
-	return 1;
+		if 9:
+		
+			return 0;
+	return 0;
