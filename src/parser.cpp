@@ -65,52 +65,39 @@ ExpressionList::ExpressionList(Expression** exprs, int count){
 }
 
 void ExpressionList::reduce(GrammerRuleList* grammer_rules){
-    for(int x = 0; x <= grammer_rules->length;){
-        int old_length = this->length;
-        for(int ii = 0; ii < x; ii++){
+    for(int ii = 0; ii < grammer_rules->length; ii++){
+        if(grammer_rules->rules[ii]->type == TOKEN) continue;
+        for(int i = 0; i < this->length; i++){
             GrammerRule* rule = grammer_rules->rules[ii];
-            if(rule->type == TOKEN) continue;
-            for(int i = 0; i < this->length; i++){
-                Expression* expr = this->expressions[i];
-                int ix = 0,expr_count = rule->length*ix;
-                if (rule->length > this->length-i) continue;
-                int xi = 0;
-                do{
-                    xi = ix;
-                    for(int iii = 0; iii < rule->length; iii++){
-                        if(strcmp(
-                            rule->ExprIdentifiers[iii],
-                            this->expressions[i+iii+(expr_count)]->Identifier) != 0
-                        )break;
-                        if(iii != rule->length-1)continue;
-                        ix++;
-                        expr_count = rule->length*ix;
-                    }
-                }while(rule->repeat && (expr_count)+i < this->length && ix != xi);
-                if(ix==0) continue;
-                Expression** exprs = (Expression**) malloc(sizeof(Expression*)*expr_count);
-                memcpy(
-                    exprs,
-                    &this->expressions[i],
-                    sizeof(Expression*)*expr_count
-                );
-                this->length -= (expr_count-1);
-                this->expressions[i] = new Expression(
-                    new ExpressionList(exprs, expr_count),
-                    rule->ExprIdentifier
-                );
-                this->expressions[i]->matched_rule = rule;
-                memcpy(
-                    &this->expressions[i+1],
-                    &this->expressions[i+expr_count],
-                    sizeof(Expression*)*(this->length-i-1)
-                );
-                ii=0;
-                rule=grammer_rules->rules[ii];
-                i=0;
-            }
+            Expression* expr = this->expressions[i];
+            int ix = 0, xi = 0, expr_count = rule->length*ix;
+            if (rule->length > this->length-i) continue;
+            do{
+                xi = ix;
+                for(int iii = 0; iii < rule->length; iii++){
+                    if(strcmp(
+                        rule->ExprIdentifiers[iii],
+                        this->expressions[i+iii+(expr_count)]->Identifier) != 0
+                    )break;
+                    if(iii != rule->length-1)continue;
+                    ix++;
+                    expr_count = rule->length*ix;
+                }
+            }while(rule->repeat && (expr_count)+i < this->length && ix != xi);
+            if(ix==0) continue;
+            Expression** exprs = (Expression**) malloc(sizeof(Expression*)*expr_count);
+            memcpy(exprs, &this->expressions[i], sizeof(Expression*)*expr_count);
+            this->length -= (expr_count-1);
+            this->expressions[i] = new Expression(new ExpressionList(exprs, expr_count), rule->ExprIdentifier);
+            this->expressions[i]->matched_rule = rule;
+            memcpy(
+                &this->expressions[i+1],
+                &this->expressions[i+expr_count],
+                sizeof(Expression*)*(this->length-i-1)
+            );
+            ii=0;
+            i=0;
         }
-        if(old_length == this->length)x++;
     }
 }
 
