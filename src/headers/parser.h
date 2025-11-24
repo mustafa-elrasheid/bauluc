@@ -32,4 +32,5 @@ struct ExpressionList{
     ExpressionList(Expression** exprs, int count);
     void reduce(GrammerRuleList* grammer_rules);
     void log();
+    ~ExpressionList();
 };

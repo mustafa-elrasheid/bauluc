@@ -125,6 +125,7 @@ void TokenList::remove_whitespace(){
 			);
 			this->length-=1;
 			x-=1;
+			delete token;
 		}
 	}
 }

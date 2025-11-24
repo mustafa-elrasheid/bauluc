@@ -64,6 +64,12 @@ ExpressionList::ExpressionList(Expression** exprs, int count){
     this->length = count;
 }
 
+ExpressionList::~ExpressionList(){
+    for(int x = 0; x < this->length; x++)
+        delete expressions[x];
+    free(expressions);
+}
+
 void ExpressionList::reduce(GrammerRuleList* grammer_rules){
     for(int ii = 0; ii < grammer_rules->length; ii++){
         if(grammer_rules->rules[ii]->type == TOKEN) continue;
@@ -82,12 +88,14 @@ void ExpressionList::reduce(GrammerRuleList* grammer_rules){
                             rule_identifier->tokens[0]->token,
                             this->expressions[i+(expr_count)]->Identifier) == 0
                         )expr_count++;
+                        delete rule_identifier;
                         continue;
                     case '+':
                         for(;strcmp(
                             rule_identifier->tokens[0]->token,
                             this->expressions[i+(expr_count)]->Identifier) == 0
                         ;expr_count++);
+                        delete rule_identifier;
                         if (old_expr_count == expr_count)break;
                         continue;
                     case '*':
@@ -95,13 +103,16 @@ void ExpressionList::reduce(GrammerRuleList* grammer_rules){
                             rule_identifier->tokens[0]->token,
                             this->expressions[i+(expr_count)]->Identifier) == 0
                         ;expr_count++);
+                        delete rule_identifier;
                         continue;
                     case 'E':
                         if(strcmp(
                             rule_identifier->tokens[0]->token,
-                            this->expressions[i+(expr_count)]->Identifier) == 0
-                        ){expr_count++;continue;}
-                        break;
+                            this->expressions[i+(expr_count)]->Identifier) != 0
+                        ){delete rule_identifier; break;}
+                        expr_count++;
+                        delete rule_identifier;
+                        continue;
                 }
                 expr_count=0;
                 break;

@@ -10,7 +10,7 @@ struct GrammerRule{
     const char* ExprIdentifier;
     GrammerRuleType type;
     union{
-        const Token* token;
+        Token* token;
         struct{
             const char** ExprIdentifiers;
             int length;
@@ -18,6 +18,7 @@ struct GrammerRule{
     };
     GrammerRule(const char* expr_identifier, Token* token);
     GrammerRule(const char* expr_identifier, const char** ExprIdentifiers, int count);
+    ~GrammerRule();
     void log();
 };
 

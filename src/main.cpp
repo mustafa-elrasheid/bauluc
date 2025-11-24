@@ -44,7 +44,7 @@ int main (int argc,char**argv ){
 	token_stack->log();
 	token_stack->flip_to_operator(keywords2);
 	token_stack->log();
-
+	
 	GrammerRuleList* grammer_rules = new GrammerRuleList(
 		new GrammerRule*[83]{
 			/* keywords */
@@ -104,7 +104,6 @@ int main (int argc,char**argv ){
 			new GrammerRule("FunctionDef",  new const char* [6]{"FUNCTION","IDENTIFIER","ROUND_BRACKET_OPEN","ROUND_BRACKET_CLOSE","ReturnType?","COLON"},6),
 			new GrammerRule("FunctionDef",  new const char* [9]{"FUNCTION","IDENTIFIER","ROUND_BRACKET_OPEN","Parameter*","LET","IDENTIFIER","ROUND_BRACKET_CLOSE","ReturnType?","COLON"},9),
 			/* Expressions*/
-
 			new GrammerRule("Expression",   new const char* [1]{"IDENTIFIER"},1),
 			new GrammerRule("Expression",   new const char* [1]{"NUMBER"},1),
 			new GrammerRule("Expression",   new const char* [4]{"Expression","SQUARE_BRACKET_OPEN","Expression",    "SQUARE_BRACKET_CLOSE"},4),
@@ -150,7 +149,6 @@ int main (int argc,char**argv ){
 		},
 		83
 	);
-
 	grammer_rules->log();
 
 	ExpressionList* exprs_list = new ExpressionList(token_stack,grammer_rules);
@@ -158,7 +156,7 @@ int main (int argc,char**argv ){
 		exprs_list->reduce(grammer_rules);
 	exprs_list->log();
 	
-	
+	delete exprs_list;
 	delete grammer_rules;
 	delete token_stack;
 	free(text);
