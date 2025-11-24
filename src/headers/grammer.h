@@ -9,7 +9,6 @@ enum GrammerRuleType{
 struct GrammerRule{
     const char* ExprIdentifier;
     GrammerRuleType type;
-    bool repeat;
     union{
         const Token* token;
         struct{
@@ -19,7 +18,7 @@ struct GrammerRule{
     };
     GrammerRule(const char* expr_identifier, Token* token);
     GrammerRule(const char* expr_identifier, const char** ExprIdentifiers, int count);
-    GrammerRule(const char* expr_identifier, const char** ExprIdentifiers, int count, bool rep);
+    void log();
 };
 
 struct GrammerRuleList{
@@ -27,4 +26,5 @@ struct GrammerRuleList{
     GrammerRule** rules;
     GrammerRuleList(GrammerRule** _rules, int _length);
     ~GrammerRuleList();
+    void log();
 };

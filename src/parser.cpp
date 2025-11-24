@@ -25,7 +25,7 @@ void Expression::log(int depth){
         return;
     }
     for(int i = 0; i < depth; i++) printf("\t");
-    printf("Expression (Identifier: \"%s\", rule:",(this)->Identifier);
+    printf("%s, rule:",(this)->Identifier);
     for(int x = 0; x < this->matched_rule->length; x++)
         printf("\"%s\",",this->matched_rule->ExprIdentifiers[x]);
     printf(" ):\n");
@@ -55,7 +55,7 @@ ExpressionList::ExpressionList(TokenList* tokens, GrammerRuleList* grammer_rules
                 expr->Identifier = grammer_rules->rules[i]->ExprIdentifier;
                 break;
             }
-        if(expressions[x] != expr) printf("no token to expression match found\n");
+        if(expressions[x] != expr) printf("no token to expression match found token:\"%s\"\n",tokens->tokens[x]->token);
     }
 }
 
@@ -70,21 +70,43 @@ void ExpressionList::reduce(GrammerRuleList* grammer_rules){
         for(int i = 0; i < this->length; i++){
             GrammerRule* rule = grammer_rules->rules[ii];
             Expression* expr = this->expressions[i];
-            int ix = 0, xi = 0, expr_count = rule->length*ix;
+            int expr_count = 0;
             if (rule->length > this->length-i) continue;
-            do{
-                xi = ix;
-                for(int iii = 0; iii < rule->length; iii++){
-                    if(strcmp(
-                        rule->ExprIdentifiers[iii],
-                        this->expressions[i+iii+(expr_count)]->Identifier) != 0
-                    )break;
-                    if(iii != rule->length-1)continue;
-                    ix++;
-                    expr_count = rule->length*ix;
+            for(int iii = 0; iii < rule->length; iii++){
+                const char* keywords[4] = {"*","+","?",NULL};
+                TokenList* rule_identifier = new TokenList(rule->ExprIdentifiers[iii],keywords);
+                int old_expr_count = expr_count;
+                switch(rule_identifier->tokens[1]->token[0]){
+                    case '?':
+                        if(strcmp(
+                            rule_identifier->tokens[0]->token,
+                            this->expressions[i+(expr_count)]->Identifier) == 0
+                        )expr_count++;
+                        continue;
+                    case '+':
+                        for(;strcmp(
+                            rule_identifier->tokens[0]->token,
+                            this->expressions[i+(expr_count)]->Identifier) == 0
+                        ;expr_count++);
+                        if (old_expr_count == expr_count)break;
+                        continue;
+                    case '*':
+                        for(;strcmp(
+                            rule_identifier->tokens[0]->token,
+                            this->expressions[i+(expr_count)]->Identifier) == 0
+                        ;expr_count++);
+                        continue;
+                    case 'E':
+                        if(strcmp(
+                            rule_identifier->tokens[0]->token,
+                            this->expressions[i+(expr_count)]->Identifier) == 0
+                        ){expr_count++;continue;}
+                        break;
                 }
-            }while(rule->repeat && (expr_count)+i < this->length && ix != xi);
-            if(ix==0) continue;
+                expr_count=0;
+                break;
+            }
+            if(expr_count==0) continue;
             Expression** exprs = (Expression**) malloc(sizeof(Expression*)*expr_count);
             memcpy(exprs, &this->expressions[i], sizeof(Expression*)*expr_count);
             this->length -= (expr_count-1);

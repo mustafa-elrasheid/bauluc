@@ -9,8 +9,8 @@ char* create_str(const char* str1, int length){
 
 bool check_prefix(const char* text,const char* prefix){
 	int index = 0;
-	for(;text[index] != 0 && prefix[index] != 0; index ++)
-		if (text[index] != prefix[index]) return false;
+	for(;prefix[index] != '\0';index++)
+		if(text[index] == '\0' && text[index] != prefix[index]) return false;
 	return true;
 }
 
@@ -89,8 +89,16 @@ void TokenList::log(){
 	printf("[");
 	for(int x= 0; x < this->length; x++){
 		const char * token = this->tokens[x]->token;
-		if(token[0] == '\n' || token[0] == '\t' || token[0] == ' ')
-			continue;
+		switch (this->tokens[x]->type){
+			case OPERATOR:
+				printf("OP:");
+				break;
+			case ATOM:
+				printf("ATOM:");
+				break;
+			default:
+				break;
+		}
 		if(x == length-1) printf("\"%s\"",token);
 		else printf("\"%s\", ",token);
 	}
@@ -100,7 +108,8 @@ void TokenList::log(){
 void TokenList::flip_to_operator(const char** keywords){
 	for(int x = 0; x < this->length; x++){
 		Token* token = this->tokens[x];
-		if(check_keywords(token->token,keywords))token->type = OPERATOR;
+		for(int x = 0; keywords[x] != 0; x++)
+		if(strcmp(token->token,keywords[x]) == 0)token->type = OPERATOR;
 	}
 }
 
@@ -132,7 +141,7 @@ void TokenList::offside(const char* whitespace, const char* indent, const char* 
 			if(check_keywords(token->token,keywords)==NULL)break;
 			tab_count++;
 		}
-		if(check_keywords(this->tokens[x+tab_count+1]->token,newline))continue;
+		if(x+tab_count+1 < this->length)if(check_keywords(this->tokens[x+tab_count+1]->token,newline))continue;
 		for(int i = prev_tab_count; i < tab_count; i++)this->insert(new Token(indent,OPERATOR),x);
 		for(int i = prev_tab_count; i > tab_count; i--)this->insert(new Token(dedent,OPERATOR),x);
 		prev_tab_count = tab_count;
