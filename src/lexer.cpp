@@ -9,8 +9,8 @@ char* create_str(const char* str1, int length){
 
 bool check_prefix(const char* text,const char* prefix){
 	int index = 0;
-	for(;prefix[index] != '\0';index++)
-		if(text[index] == '\0' && text[index] != prefix[index]) return false;
+	for(;text[index] != 0 && prefix[index] != 0; index ++)
+		if (text[index] != prefix[index]) return false;
 	return true;
 }
 
