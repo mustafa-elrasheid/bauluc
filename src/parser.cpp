@@ -1,15 +1,15 @@
 #include "headers/parser.h"
 
-Expression::Expression(const Token* token,const char* Identifier){
+Expression::Expression(const Token* token,const char* identifier){
     this->token = token;
     this->type = UNARY;
-    this->Identifier = Identifier;
+    this->identifier = identifier;
 }
 
-Expression::Expression(ExpressionList* expressions, const char* Identifier){
+Expression::Expression(ExpressionList* expressions, const char* identifier){
     this->token = token;
     this->type = COMP;
-    this->Identifier = Identifier;
+    this->identifier = identifier;
     this->expressions = expressions;
 }
 
@@ -21,13 +21,13 @@ Expression::~Expression(){
 void Expression::log(int depth){
     if(this->type == UNARY){
         for(int i = 0; i < depth; i++) printf("\t");
-        printf("Token: \"%s\" (Identifier: \"%s\")\n",(this)->token->token,this->Identifier);
+        printf("Token: \"%s\" (identifier: \"%s\")\n",(this)->token->token,this->identifier);
         return;
     }
     for(int i = 0; i < depth; i++) printf("\t");
-    printf("%s, rule:",(this)->Identifier);
+    printf("%s, rule:",(this)->identifier);
     for(int x = 0; x < this->matched_rule->length; x++)
-        printf("\"%s\",",this->matched_rule->ExprIdentifiers[x]);
+        printf("\"%s\",",this->matched_rule->expr_identifiers[x]);
     printf(" ):\n");
     for(int x = 0; x < this->expressions->length; x++)
         this->expressions->expressions[x]->log(depth+1);
@@ -52,7 +52,7 @@ ExpressionList::ExpressionList(TokenList* tokens, GrammerRuleList* grammer_rules
         for(int i = 0; i < grammer_rules->length; i++)
             if(expr->match_expression(grammer_rules->rules[i])){
                 this->expressions[x] = expr;
-                expr->Identifier = grammer_rules->rules[i]->ExprIdentifier;
+                expr->identifier = grammer_rules->rules[i]->identifier;
                 break;
             }
         if(expressions[x] != expr) printf("no token to expression match found token:\"%s\"\n",tokens->tokens[x]->token);
@@ -80,20 +80,20 @@ void ExpressionList::reduce(GrammerRuleList* grammer_rules){
             if (rule->length > this->length-i) continue;
             for(int iii = 0; iii < rule->length; iii++){
                 const char* keywords[4] = {"*","+","?",NULL};
-                TokenList* rule_identifier = new TokenList(rule->ExprIdentifiers[iii],keywords);
+                TokenList* rule_identifier = new TokenList(rule->expr_identifiers[iii],keywords);
                 int old_expr_count = expr_count;
                 switch(rule_identifier->tokens[1]->token[0]){
                     case '?':
                         if(strcmp(
                             rule_identifier->tokens[0]->token,
-                            this->expressions[i+(expr_count)]->Identifier) == 0
+                            this->expressions[i+(expr_count)]->identifier) == 0
                         )expr_count++;
                         delete rule_identifier;
                         continue;
                     case '+':
                         for(;strcmp(
                             rule_identifier->tokens[0]->token,
-                            this->expressions[i+(expr_count)]->Identifier) == 0
+                            this->expressions[i+(expr_count)]->identifier) == 0
                         ;expr_count++);
                         delete rule_identifier;
                         if (old_expr_count == expr_count)break;
@@ -101,14 +101,14 @@ void ExpressionList::reduce(GrammerRuleList* grammer_rules){
                     case '*':
                         for(;strcmp(
                             rule_identifier->tokens[0]->token,
-                            this->expressions[i+(expr_count)]->Identifier) == 0
+                            this->expressions[i+(expr_count)]->identifier) == 0
                         ;expr_count++);
                         delete rule_identifier;
                         continue;
                     case 'E':
                         if(strcmp(
                             rule_identifier->tokens[0]->token,
-                            this->expressions[i+(expr_count)]->Identifier) != 0
+                            this->expressions[i+(expr_count)]->identifier) != 0
                         ){delete rule_identifier; break;}
                         expr_count++;
                         delete rule_identifier;
@@ -121,7 +121,7 @@ void ExpressionList::reduce(GrammerRuleList* grammer_rules){
             Expression** exprs = (Expression**) malloc(sizeof(Expression*)*expr_count);
             memcpy(exprs, &this->expressions[i], sizeof(Expression*)*expr_count);
             this->length -= (expr_count-1);
-            this->expressions[i] = new Expression(new ExpressionList(exprs, expr_count), rule->ExprIdentifier);
+            this->expressions[i] = new Expression(new ExpressionList(exprs, expr_count), rule->identifier);
             this->expressions[i]->matched_rule = rule;
             memcpy(
                 &this->expressions[i+1],

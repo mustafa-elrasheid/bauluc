@@ -12,14 +12,14 @@ struct ExpressionList;
 
 struct Expression{
     ExpressionType type;
-    const char* Identifier;
+    const char* identifier;
     GrammerRule* matched_rule;
     union{
         const Token* token;
         ExpressionList* expressions;
     };
-    Expression(const Token* token,const char* Identifier);
-    Expression(ExpressionList* expressions, const char* Identifier);
+    Expression(const Token* token,const char* identifier);
+    Expression(ExpressionList* expressions, const char* identifier);
     ~Expression();
     void log(int depth);
     bool match_expression(GrammerRule* grammer_rule);

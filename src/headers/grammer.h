@@ -7,17 +7,17 @@ enum GrammerRuleType{
 };
 
 struct GrammerRule{
-    const char* ExprIdentifier;
+    const char* identifier;
     GrammerRuleType type;
     union{
         Token* token;
         struct{
-            const char** ExprIdentifiers;
+            const char** expr_identifiers;
             int length;
         };
     };
     GrammerRule(const char* expr_identifier, Token* token);
-    GrammerRule(const char* expr_identifier, const char** ExprIdentifiers, int count);
+    GrammerRule(const char* expr_identifier, const char** expr_identifiers, int count);
     ~GrammerRule();
     void log();
 };

@@ -1,15 +1,15 @@
 #include "headers/grammer.h"
 
 GrammerRule::GrammerRule(const char* expr_identifier, Token* token){
-    this->ExprIdentifier = expr_identifier;
+    this->identifier = expr_identifier;
     this->token = token;
     this->type = TOKEN;
     this->length = 0;
 }
 
-GrammerRule::GrammerRule(const char* expr_identifier, const char** ExprIdentifiers, int count){
-    this->ExprIdentifier = expr_identifier;
-    this->ExprIdentifiers = ExprIdentifiers;
+GrammerRule::GrammerRule(const char* expr_identifier, const char** expr_identifiers, int count){
+    this->identifier = expr_identifier;
+    this->expr_identifiers = expr_identifiers;
     this->type = LIST;
     this->length = count;
 }
@@ -19,13 +19,13 @@ GrammerRule::~GrammerRule(){
         delete this->token;
         return;
     }
-    delete[] ExprIdentifiers;
+    delete[] expr_identifiers;
 }
 
 void GrammerRule::log(){
-    printf("rule: \"%s\", Indentifiers:",this->ExprIdentifier);
+    printf("rule: \"%s\", Indentifiers:",this->identifier);
     for(int x = 0; x < this->length && this->type == LIST; x++){
-        printf("\"%s\", ",ExprIdentifiers[x]);
+        printf("\"%s\", ",expr_identifiers[x]);
     }
     printf("\n");
 }
