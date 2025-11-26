@@ -5,6 +5,7 @@
 #include "headers/lexer.h"
 #include "headers/parser.h"
 #include "headers/grammer.h"
+#include "headers/vm.h"
 
 char* read_file(char* path){
 	FILE* file = fopen(path,"r");
@@ -155,7 +156,19 @@ int main (int argc,char**argv ){
 	for(int x = 0; x< 100 && exprs_list->length != 1;x++)
 		exprs_list->reduce(grammer_rules);
 	exprs_list->log();
+
+	std::vector<Instruction*> instructions;
+	instructions.push_back(new Instruction(PUSH, Parameter(Null, 5)));
+	instructions.push_back(new Instruction(PUSH, Parameter(Null, 6)));
+	instructions.push_back(new Instruction(PUSH, Parameter(Null, 7)));
+	instructions.push_back(new Instruction(ADD));
+	instructions.push_back(new Instruction(ADD));
+	instructions.push_back(new Instruction(POP,  Parameter(AX,0)));
+    instructions.push_back(new Instruction(EXIT));
+	VirtualMachine* vm = new VirtualMachine(0,"hello world",1000,20);
+	vm->Run(&instructions,true);
 	
+	delete vm;
 	delete exprs_list;
 	delete grammer_rules;
 	delete token_stack;

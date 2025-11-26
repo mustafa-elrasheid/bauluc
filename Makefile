@@ -1,5 +1,5 @@
 compile:
-	g++ -g3 src/main.cpp src/lexer.cpp src/parser.cpp src/grammer.cpp -o bin/baulo
+	g++ -g3 src/main.cpp src/lexer.cpp src/parser.cpp src/grammer.cpp src/bytecode.cpp src/vm.cpp -o bin/baulo
 run:
 	./bin/baulo
 test:
