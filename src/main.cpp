@@ -2,10 +2,10 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
-#include "headers/lexer.h"
-#include "headers/parser.h"
-#include "headers/grammer.h"
-#include "headers/vm.h"
+#include "headers/lexer.hpp"
+#include "headers/parser.hpp"
+#include "headers/grammer.hpp"
+#include "headers/vm.hpp"
 
 char* read_file(char* path){
 	FILE* file = fopen(path,"r");

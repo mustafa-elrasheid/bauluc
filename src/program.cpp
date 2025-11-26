@@ -1,4 +1,4 @@
-#include "headers/program.h"
+#include "headers/program.hpp"
 
 void function(Expression* expr, InstructionList* intructions, int* entrypooint){
     if(strcmp(expr->identifier,"Function")!=0)return;

@@ -1,4 +1,4 @@
-#include "headers/vm.h"
+#include "headers/vm.hpp"
 
 int64_t call_so_lib_function(const char* library, const char* function,int* args){
 	return (

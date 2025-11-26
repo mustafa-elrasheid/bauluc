@@ -1,4 +1,4 @@
-#include "headers/bytecode.h"
+#include "headers/bytecode.hpp"
 
 
 Parameter::Parameter(RegisterType type,int offset){

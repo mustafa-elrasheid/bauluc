@@ -1,4 +1,4 @@
-#include "headers/lexer.h"
+#include "headers/lexer.hpp"
 
 char* create_str(const char* str1, int length){
 	char* new_str = (char*)malloc(length+1);

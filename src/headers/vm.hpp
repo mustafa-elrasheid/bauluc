@@ -6,7 +6,7 @@
 #include <stdint.h>
 #include <dlfcn.h>
 
-#include "bytecode.h"
+#include "bytecode.hpp"
 
 union address_as_int{
     uint64_t value;

@@ -1,6 +1,6 @@
 #pragma once
-#include "bytecode.h"
-#include "parser.h"
+#include "bytecode.hpp"
+#include "parser.hpp"
 
 struct Program{
     char* data_section;
