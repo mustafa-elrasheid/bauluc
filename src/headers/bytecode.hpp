@@ -74,4 +74,7 @@ struct Instruction{
 struct InstructionList{
 	Instruction** instructions;
 	int length;
+	int index;
+	InstructionList();
+	void push(Instruction* instruction);
 };

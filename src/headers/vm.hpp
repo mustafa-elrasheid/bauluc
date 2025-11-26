@@ -21,6 +21,6 @@ struct VirtualMachine{
     inline int64_t* destination(Parameter param);
     inline int64_t binary_operator(InstructionType type,int64_t value1,int64_t value2);
     VirtualMachine(int64_t entrypoint,char* data_Section,int64_t stack_size,int64_t registers_num);
-    void Run(const std::vector<Instruction*>* instructions,bool info);
+    void Run(InstructionList* instructions,bool info);
     ~VirtualMachine();
 };

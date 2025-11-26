@@ -1,42 +1,5 @@
-function factorial(let n) => int:
-{
-    if n <= 1:
-    {
-        return 1;
-    }
-    return n * factorial(n - 1);
-}
+function factorial():
+	return 0;
 
-function binomial_coefficient(let n, let k) => int:
-{
-    if k == 0 || k == n:
-    {
-        return 1;
-    }
-    return binomial_coefficient(n - 1, k - 1) + binomial_coefficient(n - 1, k);
-}
-
-function pascal_row(let row_index) => int:
-{
-    let int row[row_index + 1];
-    let int i = 0;
-    while i <= row_index:
-    {
-        row[i] = binomial_coefficient(row_index, i);
-        let int i = i + 1;
-    }
-    return row;
-}
-
-function sum_row(let row_index) => int:
-{
-    let int row[9] = pascal_row(row_index);
-    let int sum = 0;
-    let int j = 0;
-    while j <= row_index:
-    {
-        let int sum = sum + row[j];
-        let int j = j + 1;
-    }
-    return sum;
-}
+function main():
+	1;

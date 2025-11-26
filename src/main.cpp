@@ -6,6 +6,7 @@
 #include "headers/parser.hpp"
 #include "headers/grammer.hpp"
 #include "headers/vm.hpp"
+#include "headers/program.hpp"
 
 char* read_file(char* path){
 	FILE* file = fopen(path,"r");
@@ -157,18 +158,13 @@ int main (int argc,char**argv ){
 		exprs_list->reduce(grammer_rules);
 	exprs_list->log();
 
-	std::vector<Instruction*> instructions;
-	instructions.push_back(new Instruction(PUSH, Parameter(Null, 5)));
-	instructions.push_back(new Instruction(PUSH, Parameter(Null, 6)));
-	instructions.push_back(new Instruction(PUSH, Parameter(Null, 7)));
-	instructions.push_back(new Instruction(ADD));
-	instructions.push_back(new Instruction(ADD));
-	instructions.push_back(new Instruction(POP,  Parameter(AX,0)));
-    instructions.push_back(new Instruction(EXIT));
-	VirtualMachine* vm = new VirtualMachine(0,"hello world",1000,20);
-	vm->Run(&instructions,true);
+	Program* program = new Program(exprs_list->expressions[0]);
+
+	VirtualMachine* vm = new VirtualMachine(program->entry_point,program->data_section,1000,20);
+	vm->Run(program->instructions,true);
 	
 	delete vm;
+	delete program;
 	delete exprs_list;
 	delete grammer_rules;
 	delete token_stack;

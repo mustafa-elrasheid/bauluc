@@ -27,7 +27,6 @@ inline int64_t* VirtualMachine::destination(Parameter param){
 }
 
 inline int64_t VirtualMachine::binary_operator(InstructionType type,int64_t value1,int64_t value2){
-	printf("%d, %d\n",value1,value2);
     switch(type){
         case ADD : return  value1 +  value2;
         case SUB : return  value1 -  value2;
@@ -41,7 +40,6 @@ inline int64_t VirtualMachine::binary_operator(InstructionType type,int64_t valu
         case CMP : return  value1 == value2;
         case CMPB: return  value1 >  value2;
     }
-	
     return 0;
 }
 
@@ -55,13 +53,14 @@ VirtualMachine::VirtualMachine(int64_t entrypoint,char* data_Section,int64_t sta
 	Registers[RegisterType::IP]   = entrypoint;
 }
 
-void VirtualMachine::Run(const std::vector<Instruction*>* instructions,bool info){
+void VirtualMachine::Run(InstructionList* instructions,bool info){
 	for(;true;Registers[RegisterType::IP]++){
-		Instruction* instruction = (*instructions)[Registers[RegisterType::IP]];
+		Instruction* instruction = instructions->instructions[Registers[RegisterType::IP]];
 		int64_t* args;
+		int args_count;
 		if(info){
 			printf("[");
-			for(int x = 0;x < 10;x++){
+			for(int x = 0;x < 40;x++){
 				printf(" ");
 				if(Registers[RegisterType::SP] == (int64_t)&Stack[_stack_size - x])
 					printf("SP:");
@@ -75,7 +74,6 @@ void VirtualMachine::Run(const std::vector<Instruction*>* instructions,bool info
 			printf("SP:%zd ",Registers[RegisterType::SP]);
 			instruction->info();
 		}
-		int args_count;
 		switch (instruction->Type){
 			case DRFRNC:
 				address_as_int stack_top;
@@ -139,7 +137,6 @@ void VirtualMachine::Run(const std::vector<Instruction*>* instructions,bool info
 				break;
 		}
 	}
-	throw("Unsuccessful Unknown exit");
 }
 
 VirtualMachine::~VirtualMachine(){

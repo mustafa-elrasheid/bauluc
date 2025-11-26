@@ -92,3 +92,14 @@ void Instruction::info(){
     }
     printf("\n");
 }
+
+InstructionList::InstructionList(){
+    this->instructions = (Instruction**)malloc(1000*sizeof(Instruction*));
+    this->length = 1000;
+    this->index = 0;
+}
+
+void InstructionList::push(Instruction* instruction){
+    this->instructions[index] = instruction;
+    this->index++;
+}
