@@ -23,7 +23,7 @@ void Parameter::PrintOffset(const char * str,int offset){
     
 }
 
-void Parameter::info(){
+void Parameter::log(){
     switch (type){
         case Null:PrintOffset(""  ,this->offset);break;
         case SP  :PrintOffset("SP",this->offset);break;
@@ -60,7 +60,7 @@ Instruction* Instruction::Clone(){
     return (Instruction*)memcpy(temp,this,sizeof(Instruction));
 }
 
-void Instruction::info(){
+void Instruction::log(){
     switch (Type){     
         case MOV       : printf("Mov         ");break;
         case PUSH      : printf("Push        ");break;
@@ -86,7 +86,7 @@ void Instruction::info(){
     }     
     printf(" ");
     for(int i = 0 ; i < ParametersNum;i++){
-        Parameters[i].info();
+        Parameters[i].log();
         if(i < ParametersNum-1)
             printf(",");
     }
@@ -102,4 +102,11 @@ InstructionList::InstructionList(){
 void InstructionList::push(Instruction* instruction){
     this->instructions[index] = instruction;
     this->index++;
+}
+
+void InstructionList::log(){
+    for(int x = 0; x < this->index; x++){
+        printf("%d: ",x);
+        this->instructions[x]->log();
+    }
 }

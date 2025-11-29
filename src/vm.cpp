@@ -53,12 +53,12 @@ VirtualMachine::VirtualMachine(int64_t entrypoint,char* data_Section,int64_t sta
 	Registers[RegisterType::IP]   = entrypoint;
 }
 
-void VirtualMachine::Run(InstructionList* instructions,bool info){
+void VirtualMachine::Run(InstructionList* instructions,bool log){
 	for(;true;Registers[RegisterType::IP]++){
 		Instruction* instruction = instructions->instructions[Registers[RegisterType::IP]];
 		int64_t* args;
 		int args_count;
-		if(info){
+		if(log){
 			printf("[");
 			for(int x = 0;x < 40;x++){
 				printf(" ");
@@ -66,13 +66,13 @@ void VirtualMachine::Run(InstructionList* instructions,bool info){
 					printf("SP:");
 				if(Registers[RegisterType::BP] == (int64_t)&Stack[_stack_size - x])
 					printf("BP:");
-				printf("%zd ",Stack[_stack_size - x]);
+				printf("%#x ",Stack[_stack_size - x]);
 			}
 			printf("]\n");
-			printf("AX:%zd ",Registers[RegisterType::AX]);
-			printf("IP:%zd ",Registers[RegisterType::IP]);
-			printf("SP:%zd ",Registers[RegisterType::SP]);
-			instruction->info();
+			printf("AX:%#x ",Registers[RegisterType::AX]);
+			printf("IP:%#x ",Registers[RegisterType::IP]);
+			printf("SP:%#x ",Registers[RegisterType::SP]);
+			instruction->log();
 		}
 		switch (instruction->Type){
 			case DRFRNC:

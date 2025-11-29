@@ -57,7 +57,7 @@ struct Parameter{
 	Parameter(RegisterType type,int offset);
 	Parameter();
 	void PrintOffset(const char * str,int offset);
-	void info();
+	void log();
 };
 
 struct Instruction{
@@ -68,7 +68,7 @@ struct Instruction{
 	Instruction(InstructionType type,Parameter value);
 	Instruction(InstructionType type,Parameter first_value,Parameter second_value);
 	Instruction* Clone();
-	void info();
+	void log();
 };
 
 struct InstructionList{
@@ -77,4 +77,5 @@ struct InstructionList{
 	int index;
 	InstructionList();
 	void push(Instruction* instruction);
+	void log();
 };

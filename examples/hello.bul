@@ -1,5 +1,16 @@
-function factorial():
-	return 0;
 
-function main():
-	1;
+function fibonacci(let int n) => int:
+	let int x = 0;
+	let int y = 1;
+	let int i = 0;
+	while n > i:
+		let int temp = x+y;
+		x = y;
+		y = temp;
+		i = i + 1;
+
+	return y;
+
+function main() => int:
+	let int result = fibonacci(4);
+	result;
