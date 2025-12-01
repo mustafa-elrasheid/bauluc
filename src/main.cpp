@@ -8,6 +8,8 @@
 #include "headers/vm.hpp"
 #include "headers/program.hpp"
 
+using namespace lexer;
+
 char* read_file(char* path){
 	FILE* file = fopen(path,"r");
 	if(file == NULL){
@@ -38,16 +40,16 @@ int main (int argc,char**argv ){
 	const char* keywords[41]  = {">=","<=","||","&&","!=","==","=>","!","@","#","$","%","^","&","*","(",")","-","+","=","\t"," ","{","}","[","]","\"",":",";","'","\"","<",">",".",",","?","\\","|","/","\n",NULL};
 	const char* keywords2[]  = {"function","return","if","while","let","else","import","from","as",NULL};
 
-	TokenList* token_stack = new TokenList(text, keywords);
-	token_stack->log();
-	token_stack->offside("\t","{","}");
-	token_stack->log();
-	token_stack->remove_whitespace();
-	token_stack->log();
-	token_stack->flip_to_operator(keywords2);
-	token_stack->log();
+	TokenList token_stack = TokenList(text, keywords);
+	token_stack.log();
+	token_stack.offside("\t","{","}");
+	token_stack.log();
+	token_stack.remove_whitespace();
+	token_stack.log();
+	token_stack.flip_to_operator(keywords2);
+	token_stack.log();
 	
-	GrammerRuleList* grammer_rules = new GrammerRuleList(
+	GrammerRuleList grammer_rules = GrammerRuleList(
 		new GrammerRule*[83]{
 			/* keywords */
 			// functions
@@ -154,23 +156,18 @@ int main (int argc,char**argv ){
 		83
 	);
 
-	ExpressionList* exprs_list = new ExpressionList(token_stack, grammer_rules);
-	for(int x = 0; x < 100 && exprs_list->length != 1; x++)
-		exprs_list->reduce(grammer_rules);
-	exprs_list->log();
+	ExpressionList exprs_list = ExpressionList(&token_stack, &grammer_rules);
+	for(int x = 0; x < 100 && exprs_list.length != 1; x++)
+		exprs_list.reduce(&grammer_rules);
+	exprs_list.log();
 
-	Program* program = new Program(exprs_list->expressions[0]);
+	Program program = Program(exprs_list.expressions[0]);
 
-	program->instructions->log();
+	program.instructions->log();
 
-	VirtualMachine* vm = new VirtualMachine(program->entry_point,program->data_section, 1000, 20);
-	vm->Run(program->instructions, true);
-	
-	delete vm;
-	delete program;
-	delete exprs_list;
-	delete grammer_rules;
-	delete token_stack;
+	VirtualMachine vm = VirtualMachine(program.entry_point,program.data_section, 1000, 20);
+	vm.Run(program.instructions, true);
+
 	free(text);
 	return 0;
 }

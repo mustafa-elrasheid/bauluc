@@ -1,5 +1,7 @@
 #include "headers/parser.hpp"
 
+using namespace lexer;
+
 Expression::Expression(const Token* token,const char* identifier){
     this->token = token;
     this->type = UNARY;
@@ -21,7 +23,7 @@ Expression::~Expression(){
 void Expression::log(int depth){
     if(this->type == UNARY){
         for(int i = 0; i < depth; i++) printf("\t");
-        printf("Token: \"%s\" (identifier: \"%s\")\n",(this)->token->token,this->identifier);
+        printf("Token: \"%s\" (identifier: \"%s\")\n",(this)->token->content,this->identifier);
         return;
     }
     for(int i = 0; i < depth; i++) printf("\t");
@@ -37,9 +39,9 @@ void Expression::log(int depth){
 bool Expression::match_expression(GrammerRule* grammer_rule){
     if(grammer_rule->type == LIST || this->token->type != grammer_rule->token->type)return false;
     if(
-        (this->token->type == OPERATOR && !strcmp(this->token->token, grammer_rule->token->token)) ||
-        (this->token->type == ATOM && !strcmp("NUM", grammer_rule->token->token) && isdigit(this->token->token[0])) ||
-        (this->token->type == ATOM && !strcmp("STR", grammer_rule->token->token) && !isdigit(this->token->token[0]))
+        (this->token->type == OPERATOR && !strcmp(this->token->content, grammer_rule->token->content)) ||
+        (this->token->type == ATOM && !strcmp("NUM", grammer_rule->token->content) && isdigit(this->token->content[0])) ||
+        (this->token->type == ATOM && !strcmp("STR", grammer_rule->token->content) && !isdigit(this->token->content[0]))
     )return true;
     return false;
 }
@@ -55,7 +57,7 @@ ExpressionList::ExpressionList(TokenList* tokens, GrammerRuleList* grammer_rules
                 expr->identifier = grammer_rules->rules[i]->identifier;
                 break;
             }
-        if(expressions[x] != expr) printf("no token to expression match found token:\"%s\"\n",tokens->tokens[x]->token);
+        if(expressions[x] != expr) printf("no token to expression match found token:\"%s\"\n",tokens->tokens[x]->content);
     }
 }
 
@@ -82,17 +84,17 @@ void ExpressionList::reduce(GrammerRuleList* grammer_rules){
                 const char* keywords[4] = {"*","+","?",NULL};
                 TokenList* rule_identifier = new TokenList(rule->expr_identifiers[iii],keywords);
                 int old_expr_count = expr_count;
-                switch(rule_identifier->tokens[1]->token[0]){
+                switch(rule_identifier->tokens[1]->content[0]){
                     case '?':
                         if(strcmp(
-                            rule_identifier->tokens[0]->token,
+                            rule_identifier->tokens[0]->content,
                             this->expressions[i+(expr_count)]->identifier) == 0
                         )expr_count++;
                         delete rule_identifier;
                         continue;
                     case '+':
                         for(;strcmp(
-                            rule_identifier->tokens[0]->token,
+                            rule_identifier->tokens[0]->content,
                             this->expressions[i+(expr_count)]->identifier) == 0
                         ;expr_count++);
                         delete rule_identifier;
@@ -100,14 +102,14 @@ void ExpressionList::reduce(GrammerRuleList* grammer_rules){
                         continue;
                     case '*':
                         for(;strcmp(
-                            rule_identifier->tokens[0]->token,
+                            rule_identifier->tokens[0]->content,
                             this->expressions[i+(expr_count)]->identifier) == 0
                         ;expr_count++);
                         delete rule_identifier;
                         continue;
                     case 'E':
                         if(strcmp(
-                            rule_identifier->tokens[0]->token,
+                            rule_identifier->tokens[0]->content,
                             this->expressions[i+(expr_count)]->identifier) != 0
                         ){delete rule_identifier; break;}
                         expr_count++;

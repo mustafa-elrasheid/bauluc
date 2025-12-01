@@ -43,7 +43,7 @@ void _Expression(Expression* expr, InstructionList* instructions, LabelList* fun
     const char* expr_type = expr->expressions->expressions[0]->identifier;
     if(strcmp(expr_type,"IDENTIFIER")==0){
         instructions->push(new Instruction(PUSH,Parameter(BP,0))); // the value is already in the top of the stack
-        instructions->push(new Instruction(PUSH,Parameter(Null,var_labels->find(expr->expressions->expressions[0]->token->token))));
+        instructions->push(new Instruction(PUSH,Parameter(Null,var_labels->find(expr->expressions->expressions[0]->token->content))));
         instructions->push(new Instruction(SUB));
         for(int x = 0; x < deference_num+1; x++)
             instructions->push(new Instruction(DRFRNC));
@@ -78,7 +78,7 @@ void _Expression(Expression* expr, InstructionList* instructions, LabelList* fun
         return;
     }
     if(strcmp(expr_type,"NUMBER")==0){
-        instructions->push(new Instruction(PUSH,Parameter(Null,atoi(expr->expressions->expressions[0]->token->token))));
+        instructions->push(new Instruction(PUSH,Parameter(Null,atoi(expr->expressions->expressions[0]->token->content))));
         return;
     }
     if(strcmp(expr_type,"Expression") == 0 && strcmp(expr->expressions->expressions[2]->identifier,"Expression") == 0 && expr->expressions->length == 3){
@@ -145,7 +145,7 @@ void _Expression(Expression* expr, InstructionList* instructions, LabelList* fun
 				JMP,
 				Parameter(
 					Null,
-					function_labels->find(expr->expressions->expressions[0]->expressions->expressions[0]->token->token)
+					function_labels->find(expr->expressions->expressions[0]->expressions->expressions[0]->token->content)
 		)));
 
 		instructions->push(new Instruction(InstructionType::NOP)); 
@@ -192,7 +192,7 @@ void Statement(Expression* expr, InstructionList* instructions, int* stack_size,
     }
     if(strcmp(expr_type,"LET")==0){
         *stack_size += 8;
-        var_labels->push(new Label(expr->expressions->expressions[2]->expressions->expressions[0]->expressions->expressions[0]->token->token,var_labels->peak()+8));
+        var_labels->push(new Label(expr->expressions->expressions[2]->expressions->expressions[0]->expressions->expressions[0]->token->content,var_labels->peak()+8));
         _Expression(expr->expressions->expressions[2],instructions,function_labels,var_labels);
         instructions->push(new Instruction(POP, Parameter(AX, 0)));
         return;
@@ -217,7 +217,7 @@ void Statement(Expression* expr, InstructionList* instructions, int* stack_size,
 }
 
 void function(Expression* expr, InstructionList* instructions, int* entrypoint, LabelList* function_labels){
-    const char* function_name = expr->expressions->expressions[0]->expressions->expressions[1]->token->token;
+    const char* function_name = expr->expressions->expressions[0]->expressions->expressions[1]->token->content;
     bool is_main = strcmp(function_name,"main" ) == 0;
     if(is_main) *entrypoint = instructions->index;
     function_labels->push(new Label(function_name,instructions->index));
@@ -230,7 +230,7 @@ void function(Expression* expr, InstructionList* instructions, int* entrypoint, 
     LabelList* var_labels = new LabelList();
      // yah ik magic number
     if(expr->expressions->expressions[0]->expressions->length >= 7){
-        var_labels->push(new Label(expr->expressions->expressions[0]->expressions->expressions[5]->token->token,8));
+        var_labels->push(new Label(expr->expressions->expressions[0]->expressions->expressions[5]->token->content,8));
             instructions->push(new Instruction(SUB, Parameter(SP, 0), Parameter(Null, 8)));
         }
     Statement(expr->expressions->expressions[expr->expressions->length-1], instructions, &stack_size, function_labels, var_labels);    

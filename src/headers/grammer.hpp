@@ -10,13 +10,13 @@ struct GrammerRule{
     const char* identifier;
     GrammerRuleType type;
     union{
-        Token* token;
+        lexer::Token* token;
         struct{
             const char** expr_identifiers;
             int length;
         };
     };
-    GrammerRule(const char* expr_identifier, Token* token);
+    GrammerRule(const char* expr_identifier, lexer::Token* token);
     GrammerRule(const char* expr_identifier, const char** expr_identifiers, int count);
     ~GrammerRule();
     void log();

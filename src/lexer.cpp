@@ -1,5 +1,7 @@
 #include "headers/lexer.hpp"
 
+using namespace lexer;
+
 char* create_str(const char* str1, int length){
 	char* new_str = (char*)malloc(length+1);
 	strncpy(new_str, str1, length);
@@ -32,7 +34,7 @@ int count_tokens(const char* text, const char** keywords){
 }
 
 Token::Token(const char* token_str,TokenType type){
-	this->token = strdup(token_str);
+	this->content = strdup(token_str);
 	this->binding_power_left = 10;
 	this->binding_power_right = 11;
 	this->type = type;
@@ -43,7 +45,7 @@ Token::Token(const char* token_str,TokenType type){
 }
 
 Token::~Token(){
-	free(this->token);
+	free(this->content);
 }
 
 TokenList::TokenList(const char* text,const char** keywords){
@@ -88,7 +90,7 @@ TokenList::~TokenList(){
 void TokenList::log(){
 	printf("[");
 	for(int x= 0; x < this->length; x++){
-		const char * token = this->tokens[x]->token;
+		const char * token = this->tokens[x]->content;
 		switch (this->tokens[x]->type){
 			case OPERATOR:
 				printf("OP:");
@@ -109,7 +111,7 @@ void TokenList::flip_to_operator(const char** keywords){
 	for(int x = 0; x < this->length; x++){
 		Token* token = this->tokens[x];
 		for(int x = 0; keywords[x] != 0; x++)
-		if(strcmp(token->token,keywords[x]) == 0)token->type = OPERATOR;
+		if(strcmp(token->content,keywords[x]) == 0)token->type = OPERATOR;
 	}
 }
 
@@ -117,7 +119,7 @@ void TokenList::remove_whitespace(){
 	for(int x = 0; x < this->length; x++){
 		Token* token = this->tokens[x];
 		const char* keywords[4] = {" ","\t","\n",NULL};
-		if(check_keywords(token->token,keywords)!=NULL){
+		if(check_keywords(token->content,keywords)!=NULL){
 			memcpy(
 				&this->tokens[x],
 				&this->tokens[x+1],
@@ -135,14 +137,14 @@ void TokenList::offside(const char* whitespace, const char* indent, const char* 
 	int prev_tab_count = 0;
 	for(int x = 0; x < this->length; x++){
 		const char* newline[2] = {"\n",NULL};
-		if(!check_keywords(this->tokens[x]->token,newline))continue;
+		if(!check_keywords(this->tokens[x]->content,newline))continue;
 		int tab_count = 0;
 		for(int i = x+1; i < this->length; x++,i++){
 			Token* token = this->tokens[i];
-			if(check_keywords(token->token,keywords)==NULL)break;
+			if(check_keywords(token->content,keywords)==NULL)break;
 			tab_count++;
 		}
-		if(x+tab_count+1 < this->length)if(check_keywords(this->tokens[x+tab_count+1]->token,newline))continue;
+		if(x+tab_count+1 < this->length)if(check_keywords(this->tokens[x+tab_count+1]->content,newline))continue;
 		for(int i = prev_tab_count; i < tab_count; i++)this->insert(new Token(indent,OPERATOR),x);
 		for(int i = prev_tab_count; i > tab_count; i--)this->insert(new Token(dedent,OPERATOR),x);
 		prev_tab_count = tab_count;

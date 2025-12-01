@@ -1,5 +1,7 @@
 #include "headers/grammer.hpp"
 
+using namespace lexer;
+
 GrammerRule::GrammerRule(const char* expr_identifier, Token* token){
     this->identifier = expr_identifier;
     this->token = token;
