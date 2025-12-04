@@ -256,3 +256,7 @@ Program::Program(Expression* expr){
         function(function_expr, this->instructions, &this->entry_point, function_labels);
     }
 }
+
+Program::~Program(){
+    delete data_section;
+}

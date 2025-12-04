@@ -1,14 +1,11 @@
 #include "headers/bytecode.hpp"
 
-
 Parameter::Parameter(RegisterType type,int offset){
     this->type = type;
     this->offset = offset;
 }
 
-Parameter::Parameter(){
-
-}
+Parameter::Parameter(){}
 
 void Parameter::PrintOffset(const char * str,int offset){
     printf(str);

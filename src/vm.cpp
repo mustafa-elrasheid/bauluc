@@ -11,19 +11,7 @@ int64_t call_so_lib_function(const char* library, const char* function,int* args
 }
 
 inline int64_t VirtualMachine::parameter_value(Parameter* param){
-    switch(param->type){
-        case Null:
-            return param->offset;
-        default:
-            return Registers[param->type];
-    }
-}
-
-inline int64_t* VirtualMachine::destination(Parameter param){
-    switch(param.type){
-        default:
-            return &Registers[param.type];
-    }
+	return param->offset + Registers[param->type];
 }
 
 inline int64_t VirtualMachine::binary_operator(InstructionType type,int64_t value1,int64_t value2){
@@ -51,6 +39,7 @@ VirtualMachine::VirtualMachine(int64_t entrypoint,char* data_Section,int64_t sta
 	Registers[RegisterType::SP]   = (int64_t)&Stack[stack_size];
 	Registers[RegisterType::data] = (int64_t)data_Section;
 	Registers[RegisterType::IP]   = entrypoint;
+	Registers[RegisterType::Null] = 0;
 }
 
 void VirtualMachine::Run(InstructionList* instructions,bool log){
@@ -94,12 +83,12 @@ void VirtualMachine::Run(InstructionList* instructions,bool log){
 				*(int64_t*)Registers[RegisterType::SP] = parameter_value(&(instruction->Parameters[FIRST]));
 				break;
 			case POP:
-				*(destination(instruction->Parameters[FIRST])) = *(int64_t*)Registers[RegisterType::SP];
+				Registers[instruction->Parameters[FIRST].type] = *(int64_t*)Registers[RegisterType::SP];
 				Registers[RegisterType::SP]+=8;
 				break;
 			case MOV:
 				if(instruction->ParametersNum == 2){
-					*(destination(instruction->Parameters[FIRST])) = parameter_value(&(instruction->Parameters[SECOND]));
+					Registers[instruction->Parameters[FIRST].type] = parameter_value(&(instruction->Parameters[SECOND]));
 					break;
 				}
 				address_as_int temp;
