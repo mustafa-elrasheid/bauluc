@@ -77,4 +77,5 @@ struct InstructionList{
 	InstructionList();
 	void push(Instruction* instruction);
 	void log();
+	~InstructionList();
 };

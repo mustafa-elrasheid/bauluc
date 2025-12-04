@@ -1,4 +1,4 @@
-#include "headers/grammer.hpp"
+#include "grammer.hpp"
 
 GrammerRule::GrammerRule(const char* expr_identifier, Lexer::Token* token){
     this->identifier = expr_identifier;

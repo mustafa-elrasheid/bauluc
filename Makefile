@@ -1,9 +1,9 @@
 compile:
-	g++ -g3 src/main.cpp src/lexer.cpp src/parser.cpp src/grammer.cpp src/bytecode.cpp src/vm.cpp src/program.cpp -o bin/baulo
+	g++ -g3 src/main.cpp src/frontend/lexer.cpp src/frontend/parser.cpp src/frontend/grammer.cpp src/bytecode.cpp src/vm.cpp src/program.cpp src/utils.cpp -o bin/baulu
 run:
-	./bin/baulo
+	./bin/baulu examples/hello.bul
 test:
-	./bin/baulo examples/hello.bul
+	./bin/baulu examples/hello.bul -log
 compile-test:
 	make compile
 	make test

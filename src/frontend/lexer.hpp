@@ -5,13 +5,11 @@
 #include <string.h>
 #include <stdint.h>
 
+namespace Lexer{
     char* create_str(const char* str1, int length);
     bool check_prefix(const char* text,const char* prefix);
     const char* check_keywords(const char* text, const char** keywords);
     int count_tokens(const char* text, const char** keywords);
-
-namespace lexer{
-
 
     enum TokenType{
         ATOM,
@@ -37,12 +35,8 @@ namespace lexer{
         const Token* next();
         const Token* peek();
         void log();
-        Token*& operator[](std::size_t i) {
-            return tokens[i];
-        }
-        Token* operator[](std::size_t i) const {
-            return tokens[i];
-        }
+        Token*& operator[](int i);
+        Token*  operator[](int i) const ;
         void flip_to_operator(const char** keywords);
         void remove_whitespace();
         void offside(const char* whitespace, const char* indent, const char* dedent);

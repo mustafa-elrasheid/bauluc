@@ -1,6 +1,6 @@
-#include "headers/parser.hpp"
+#include "parser.hpp"
 
-using namespace lexer;
+using namespace Lexer;
 
 Expression::Expression(const Token* token,const char* identifier){
     this->token = token;
@@ -57,7 +57,7 @@ ExpressionList::ExpressionList(TokenList* tokens, GrammerRuleList* grammer_rules
                 expr->identifier = grammer_rules->rules[i]->identifier;
                 break;
             }
-        if(expressions[x] != expr) printf("no token to expression match found token:\"%s\"\n",tokens->tokens[x]->content);
+        if(expressions[x] != expr) error("Unexpected Token: \"%s\"\n",expr->token->content);
     }
 }
 

@@ -1,29 +1,27 @@
-#include "headers/lexer.hpp"
+#include "lexer.hpp"
 
-using namespace lexer;
-
-char* create_str(const char* str1, int length){
+char* Lexer::create_str(const char* str1, int length){
 	char* new_str = (char*)malloc(length+1);
 	strncpy(new_str, str1, length);
 	new_str[length] = '\0';
 	return new_str;
 }
 
-bool check_prefix(const char* text,const char* prefix){
+bool Lexer::check_prefix(const char* text,const char* prefix){
 	int index = 0;
 	for(;text[index] != 0 && prefix[index] != 0; index ++)
 		if (text[index] != prefix[index]) return false;
 	return true;
 }
 
-const char* check_keywords(const char* text, const char** keywords){
+const char* Lexer::check_keywords(const char* text, const char** keywords){
 	for(int i = 0; keywords[i] != NULL; i++)
 		if(check_prefix(text, keywords[i]))
 			return keywords[i];
 	return NULL;
 }
 
-int count_tokens(const char* text, const char** keywords){
+int Lexer::count_tokens(const char* text, const char** keywords){
 	int token_count = 0;
 	for(int index = 0; text[index] != '\0'; token_count++, index++){
 		if(check_keywords(text+index,keywords)) continue;
@@ -33,7 +31,7 @@ int count_tokens(const char* text, const char** keywords){
 	return token_count;
 }
 
-Token::Token(const char* token_str,TokenType type){
+Lexer::Token::Token(const char* token_str,TokenType type){
 	this->content = strdup(token_str);
 	this->binding_power_left = 10;
 	this->binding_power_right = 11;
@@ -44,11 +42,11 @@ Token::Token(const char* token_str,TokenType type){
 	}
 }
 
-Token::~Token(){
+Lexer::Token::~Token(){
 	free(this->content);
 }
 
-TokenList::TokenList(const char* text,const char** keywords){
+Lexer::TokenList::TokenList(const char* text,const char** keywords){
 	Token** tokens = (Token**)malloc((count_tokens(text,keywords)+1)*sizeof(Token*));
 	int token_count = 0;
 	for(int index = 0; text[index] != '\0'; index++, token_count++){
@@ -71,23 +69,30 @@ TokenList::TokenList(const char* text,const char** keywords){
 	this->tokens[token_count] = new Token("EOF",END_OF_FILE);
 }
 
-const Token* TokenList::next(){
+Lexer::Token*& Lexer::TokenList::operator[](int i) {
+	return tokens[i];
+}
+Lexer::Token* Lexer::TokenList::operator[](int i) const {
+	return tokens[i];
+}
+
+const Lexer::Token* Lexer::TokenList::next(){
     Token* value = this->tokens[this->index];
     this->index++;
     return value;
 }
 
-const Token* TokenList::peek(){
+const Lexer::Token* Lexer::TokenList::peek(){
     return this->tokens[this->index];
 }
 
-TokenList::~TokenList(){
+Lexer::TokenList::~TokenList(){
 	for(int x= 0; x < this->length; x++)
 		delete this->tokens[x];
 	free(this->tokens);
 }
 
-void TokenList::log(){
+void Lexer::TokenList::log(){
 	printf("[");
 	for(int x= 0; x < this->length; x++){
 		const char * token = this->tokens[x]->content;
@@ -107,7 +112,7 @@ void TokenList::log(){
 	printf("]\n");
 }
 
-void TokenList::flip_to_operator(const char** keywords){
+void Lexer::TokenList::flip_to_operator(const char** keywords){
 	for(int x = 0; x < this->length; x++){
 		Token* token = this->tokens[x];
 		for(int x = 0; keywords[x] != 0; x++)
@@ -115,7 +120,7 @@ void TokenList::flip_to_operator(const char** keywords){
 	}
 }
 
-void TokenList::remove_whitespace(){
+void Lexer::TokenList::remove_whitespace(){
 	for(int x = 0; x < this->length; x++){
 		Token* token = this->tokens[x];
 		const char* keywords[4] = {" ","\t","\n",NULL};
@@ -132,7 +137,7 @@ void TokenList::remove_whitespace(){
 	}
 }
 
-void TokenList::offside(const char* whitespace, const char* indent, const char* dedent){
+void Lexer::TokenList::offside(const char* whitespace, const char* indent, const char* dedent){
 	const char* keywords[2] = {whitespace,NULL};
 	int prev_tab_count = 0;
 	for(int x = 0; x < this->length; x++){
@@ -152,7 +157,7 @@ void TokenList::offside(const char* whitespace, const char* indent, const char* 
 	for(int i = 0; i < prev_tab_count; i++)this->insert(new Token(dedent,OPERATOR),this->length-1);
 }
 
-void TokenList::insert(Token* token, int index){
+void Lexer::TokenList::insert(Token* token, int index){
 	this->tokens = (Token**)realloc(this->tokens,sizeof(Token*)*(this->length+1));
 	memcpy(
 		&this->tokens[index+1],
