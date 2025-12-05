@@ -12,10 +12,7 @@ using namespace Lexer;
 
 char* read_file(char* path){
 	FILE* file = fopen(path,"r");
-	if(file == NULL){
-		printf("The File \"%s\" provided doesn't exist\n",path);
-		return NULL;
-	}
+	if(file == NULL)throw "file not found";
 	fseek(file, 0L, SEEK_END);
 	int file_size = ftell(file);
 	char* buffer = (char*)calloc(1, file_size+1);
@@ -25,31 +22,34 @@ char* read_file(char* path){
 	return buffer;
 }
 
-
 int main (int argc,char**argv ){
 	
 	if(argc <= 1){
-		printf("No File Included\n");
+		printf("No File Included. for more info use \"-help\".\n");
 		return -1;
 	}
 
 	bool show_log = false;
 	for(int i = 0; i < argc; i++){
 		if(strcmp("-info",argv[i]) == 0){
-			printf("Baulu Compiler\n");
-			printf("a compiler for the baulu programming language\n");
+			printf("Baulu Compiler\na compiler for the baulu programming language\n");
 			return 0;
 		}
 		if(strcmp("-help",argv[i]) == 0){
-			printf("Usage: baulo [options] <source-file>\n");
+			printf("Usage: baulo <source-file> [options]\n");
 			printf("Options:\n");
-			printf("  -info          Display information about the compiler\n");
-			printf("  -help          Display this help message\n");
-			printf("  -log           Enable detailed logging during compilation and execution\n");
+			printf("\t-info   :\tDisplay information about the compiler\n");
+			printf("\t-help   :\tDisplay this help message\n");
+			printf("\t-log    :\tEnable detailed logging during compilation and execution\n");
+			printf("\t-version:\tDisplay the compiler version\n");
 			return 0;
 		}
 		if(strcmp("-log",argv[i]) == 0){
 			show_log = true;
+		}
+		if(strcmp("-version",argv[i]) == 0){
+			printf("Baulu Compiler version 0.1.0\n");
+			return 0;
 		}
 	}
 
@@ -58,10 +58,11 @@ int main (int argc,char**argv ){
 		text = read_file(argv[1]);
 		if(show_log) printf("file:\n%s\n",text);
 	}catch (const char* message){
-		perror("an error happened while handing the file.");
+		printf("File error: %s\n",message);
+		return -1;
 	}
 
-	const char* keywords[41]  = {">=","<=","||","&&","!=","==","=>","!","@","#","$","%","^","&","*","(",")","-","+","=","\t"," ","{","}","[","]","\"",":",";","'","\"","<",">",".",",","?","\\","|","/","\n",NULL};
+	const char* keywords[]  = {">=","<=","||","&&","!=","==","=>","!","@","#","$","%","^","&","*","(",")","-","+","=","\t"," ","{","}","[","]","\"",":",";","'","\"","<",">",".",",","?","\\","|","/","\n",NULL};
 	const char* keywords2[]  = {"function","return","if","while","let","else","import","from","as",NULL};
 	
 	TokenList* token_stack;
@@ -75,7 +76,8 @@ int main (int argc,char**argv ){
 		token_stack->flip_to_operator(keywords2);
 		if(show_log)token_stack->log();
 	} catch(const char* message){
-		perror("an error happened while lexing the file.");
+		printf("Lexing Error: %s\n",message);
+		return -1;
 	}
 
 	GrammerRuleList* token_rules;
@@ -170,6 +172,7 @@ int main (int argc,char**argv ){
 				new GrammerRule("Expression",   new const char* [3]{"Expression", "PLUS",                "Expression"}, 3),
 				new GrammerRule("Expression",   new const char* [3]{"Expression", "SUB",                 "Expression"}, 3),
 				new GrammerRule("Expression",   new const char* [3]{"Expression", "EQUAL",               "Expression"}, 3),
+				// unary operations
 				new GrammerRule("Expression",   new const char* [2]{"BIT_NOT",    "Expression"},2),
 				new GrammerRule("Expression",   new const char* [2]{"LOGIC_NOT",  "Expression"},2),
 				new GrammerRule("Expression",   new const char* [2]{"SUB",        "Expression"},2),
@@ -196,7 +199,8 @@ int main (int argc,char**argv ){
 			grammer_rules->log();
 		}
 	} catch(const char* message){
-		perror("an error happened while creating token grammer rules.");
+		printf("Grammer Error: %s\n",message);
+		return -1;
 	}
 
 	ExpressionList* exprs_list;
@@ -205,7 +209,8 @@ int main (int argc,char**argv ){
 		exprs_list->reduce(grammer_rules);
 		if(show_log)exprs_list->log();
 	} catch (const char* message){
-		perror("an error happened while parsing the tokens.");
+		printf("Parsing Error: %s\n",message);
+		return -1;
 	}
 
 	Program* program;
@@ -214,7 +219,8 @@ int main (int argc,char**argv ){
 		program = new Program(exprs_list->expressions[0]);
 		if(show_log)program->instructions->log();
 	} catch(const char* message){
-		perror("an error happened while generating the program.");
+		printf("Program Error: %s\n",message);
+		return -1;
 	}
 
 	VirtualMachine* vm;
@@ -224,10 +230,9 @@ int main (int argc,char**argv ){
 		free(text);
 		return 0;
 	} catch(const char* message){
-		perror("an error happened while running the program.");
+		printf("Runtime Error: %s\n",message);
+		return -1;
 	}
-	
-
 
 	return 0;
 }

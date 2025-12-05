@@ -1,38 +1,32 @@
 #include "headers/program.hpp"
 
-struct Label{
-    int offset;
-    const char* identifier;
-    Label(const char* identif, int _offset){
-        this->identifier = identif;
-        this->offset = _offset;
-    }
-};
+Label::Label(const char* identif, int _offset){
+    this->identifier = identif;
+    this->offset = _offset;
+}
 
-struct LabelList{
-    int length;
-    int index;
-    Label** labels;
-    LabelList(){
-        this->index = -1;
-        this->length = 1000;
-        this->labels = (Label**)malloc(sizeof(Label*)*1000);
+LabelList::LabelList(int size){
+    this->index = -1;
+    this->length = size;
+    this->labels = (Label**)malloc(sizeof(Label*)*size);
+}
+
+void LabelList::push(Label* label){
+    this->index+=1;
+    this->labels[index] = label;
+}
+
+int LabelList::find(const char* identifier){
+    for(int x = 0; x < this->index+1; x++){
+        if(strcmp(identifier,this->labels[x]->identifier) == 0)return this->labels[x]->offset;
     }
-    void push(Label* label){
-        this->index+=1;
-        this->labels[index] = label;
-    }
-    int find(const char* identifier){
-        for(int x = 0; x < this->index+1; x++){
-            if(strcmp(identifier,this->labels[x]->identifier) == 0)return this->labels[x]->offset;
-        }
-        return -1;
-    }
-    int peak(){
-        if(index == -1)return 0;
-        return this->labels[index]->offset;
-    }
-};
+    return -1;
+}
+
+int LabelList::peak(){
+    if(index == -1)return 0;
+    return this->labels[index]->offset;
+}
 
 int Max(int x,int y){
 	if(x > y)return x;
