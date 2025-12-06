@@ -24,9 +24,8 @@ GrammerRule::~GrammerRule(){
 
 void GrammerRule::log(){
     printf("rule: \"%s\", Indentifiers:",this->identifier);
-    for(int x = 0; x < this->length && this->type == LIST; x++){
+    for(int x = 0; x < this->length && this->type == LIST; x++)
         printf("\"%s\", ",expr_identifiers[x]);
-    }
     printf("\n");
 }
 

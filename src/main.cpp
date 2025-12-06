@@ -56,6 +56,9 @@ int main (int argc,char**argv ){
 	char* text;
 	try{
 		text = read_file(argv[1]);
+		char* suffix = "\nfunction _start():{main();}";
+		text = (char*)realloc(text, strlen(text)+strlen(suffix)+1);
+		strcat(text, suffix);
 		if(show_log) printf("file:\n%s\n",text);
 	}catch (const char* message){
 		printf("File error: %s\n",message);
@@ -227,12 +230,18 @@ int main (int argc,char**argv ){
 	try{
 		vm = new VirtualMachine(program->entry_point, program->data_section, 1000, 20);
 		vm->Run(program->instructions, show_log);
-		free(text);
-		return 0;
 	} catch(const char* message){
 		printf("Runtime Error: %s\n",message);
 		return -1;
 	}
+
+	free(text);
+	delete token_stack;
+	delete grammer_rules;
+	delete token_rules;
+	delete exprs_list;
+	delete program;
+	delete vm;
 
 	return 0;
 }

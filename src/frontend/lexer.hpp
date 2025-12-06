@@ -7,7 +7,7 @@
 
 namespace Lexer{
     char* create_str(const char* str1, int length);
-    bool check_prefix(const char* text,const char* prefix);
+    bool check_prefix(const char* text, const char* prefix);
     const char* check_keywords(const char* text, const char** keywords);
     int count_tokens(const char* text, const char** keywords);
 
@@ -30,7 +30,7 @@ namespace Lexer{
         Token** tokens;
         int index;
         int length;
-        TokenList(const char* text,const char** keywords);
+        TokenList(const char* text, const char** keywords);
         ~TokenList();
         const Token* next();
         const Token* peek();

@@ -12,12 +12,11 @@ Expression::Expression(ExpressionList* expressions, const char* identifier){
     this->token = token;
     this->type = COMP;
     this->identifier = identifier;
-    this->expressions = expressions;
+    this->expressions = *expressions;
 }
 
 Expression::~Expression(){
     if(this->type == UNARY) return;
-    delete this->expressions;
 }
 
 void Expression::log(int depth){
@@ -31,8 +30,8 @@ void Expression::log(int depth){
     for(int x = 0; x < this->matched_rule->length; x++)
         printf("\"%s\",",this->matched_rule->expr_identifiers[x]);
     printf(" ):\n");
-    for(int x = 0; x < this->expressions->length; x++)
-        this->expressions->expressions[x]->log(depth+1);
+    for(int x = 0; x < this->expressions.length; x++)
+        this->expressions.expressions[x]->log(depth+1);
 }
 
 
@@ -66,10 +65,22 @@ ExpressionList::ExpressionList(Expression** exprs, int count){
     this->length = count;
 }
 
+ExpressionList::ExpressionList(){
+    this->expressions = NULL;
+    this->length = 0;
+}
+
 ExpressionList::~ExpressionList(){
     for(int x = 0; x < this->length; x++)
         delete expressions[x];
     free(expressions);
+}
+
+Expression*& ExpressionList::operator[](int i){
+    return expressions[i];
+}
+Expression*  ExpressionList::operator[](int i) const{
+    return expressions[i];
 }
 
 void ExpressionList::reduce(GrammerRuleList* grammer_rules){
