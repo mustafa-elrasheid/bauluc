@@ -48,20 +48,22 @@ void VirtualMachine::Run(InstructionList* instructions,bool log){
 		int64_t* args;
 		int args_count;
 		if(log){
+			instruction->log();
 			printf("[");
-			for(int x = 0;x < 40;x++){
+			for(int x = 0;x < 20;x++){
 				printf(" ");
 				if(Registers[RegisterType::SP] == (int64_t)&Stack[_stack_size - x])
-					printf("SP:");
-				if(Registers[RegisterType::BP] == (int64_t)&Stack[_stack_size - x])
-					printf("BP:");
+					printf("S");
+				else if(Registers[RegisterType::BP] == (int64_t)&Stack[_stack_size - x])
+					printf("B");
+				else
+					printf(" ");
 				printf("%#x ",Stack[_stack_size - x]);
 			}
-			printf("]\n");
+			printf("] ");
 			printf("AX:%#x ",Registers[RegisterType::AX]);
 			printf("IP:%#x ",Registers[RegisterType::IP]);
 			printf("SP:%#x ",Registers[RegisterType::SP]);
-			instruction->log();
 		}
 		switch (instruction->Type){
 			case DRFRNC:
@@ -129,6 +131,6 @@ void VirtualMachine::Run(InstructionList* instructions,bool log){
 }
 
 VirtualMachine::~VirtualMachine(){
-	delete[] Stack;
-	delete[] Registers;
+	free(Stack);
+	free(Registers);
 }

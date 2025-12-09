@@ -56,7 +56,7 @@ int main (int argc,char**argv ){
 	char* text;
 	try{
 		text = read_file(argv[1]);
-		char* suffix = "\nfunction _start():{main();}";
+		const char* suffix = "\nfunction _start():{main();}";
 		text = (char*)realloc(text, strlen(text)+strlen(suffix)+1);
 		strcat(text, suffix);
 		if(show_log) printf("file:\n%s\n",text);
@@ -82,6 +82,7 @@ int main (int argc,char**argv ){
 		printf("Lexing Error: %s\n",message);
 		return -1;
 	}
+	free(text);
 
 	GrammerRuleList* token_rules;
 	GrammerRuleList* grammer_rules;
@@ -225,6 +226,10 @@ int main (int argc,char**argv ){
 		printf("Program Error: %s\n",message);
 		return -1;
 	}
+	delete token_stack;
+	delete exprs_list;
+	delete token_rules;
+	delete grammer_rules;
 
 	VirtualMachine* vm;
 	try{
@@ -234,12 +239,6 @@ int main (int argc,char**argv ){
 		printf("Runtime Error: %s\n",message);
 		return -1;
 	}
-
-	free(text);
-	delete token_stack;
-	delete grammer_rules;
-	delete token_rules;
-	delete exprs_list;
 	delete program;
 	delete vm;
 

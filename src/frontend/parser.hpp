@@ -34,7 +34,7 @@ struct Expression{
         const Lexer::Token* token;
         ExpressionList expressions;
     };
-    Expression(const Lexer::Token* token,const char* identifier);
+    Expression(const Lexer::Token* token, const char* identifier);
     Expression(ExpressionList* expressions, const char* identifier);
     void log(int depth);
     bool match_expression(GrammerRule* grammer_rule);

@@ -53,9 +53,9 @@ enum RegisterType{
 struct Parameter{
 	RegisterType type;
 	int64_t offset;
-	Parameter(RegisterType type,int offset);
+	Parameter(RegisterType type, int offset);
 	Parameter();
-	void PrintOffset(const char * str,int offset);
+	void PrintOffset(const char * str, int offset);
 	void log();
 };
 
@@ -64,8 +64,8 @@ struct Instruction{
 	int ParametersNum;
 	Parameter Parameters[2];
 	Instruction(InstructionType type);
-	Instruction(InstructionType type,Parameter value);
-	Instruction(InstructionType type,Parameter first_value,Parameter second_value);
+	Instruction(InstructionType type, Parameter value);
+	Instruction(InstructionType type, Parameter first_value, Parameter second_value);
 	Instruction* Clone();
 	void log();
 };

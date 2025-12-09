@@ -7,7 +7,7 @@ char* Lexer::create_str(const char* str1, int length){
 	return new_str;
 }
 
-bool Lexer::check_prefix(const char* text,const char* prefix){
+bool Lexer::check_prefix(const char* text, const char* prefix){
 	int index = 0;
 	for(;prefix[index] != 0; index ++)
 		if (text[index] != prefix[index]) return false;

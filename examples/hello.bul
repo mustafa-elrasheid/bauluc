@@ -11,6 +11,21 @@ function fibonacci(let int n) => int:
 
 	return y;
 
+function sum_primes(let int n):
+	let int total = 0;
+	let int i = 0;
+	while i < n:
+		let int is_prime = 1;
+		let int ii = 2;
+		while ii < i:
+			if i % ii == 0:
+				is_prime = 0;
+			ii = ii + 1;
+		if is_prime:
+			total = total+i;
+		i=i+1;
+	return total;
+
 function main() => int:
-	let int result = fibonacci(4);
-	result;
+	let int result = sum_primes(200);
+	return result;

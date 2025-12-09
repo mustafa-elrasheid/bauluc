@@ -1,15 +1,15 @@
 #include "headers/bytecode.hpp"
 
-Parameter::Parameter(RegisterType type,int offset){
+Parameter::Parameter(RegisterType type, int offset){
     this->type = type;
     this->offset = offset;
 }
 
 Parameter::Parameter(){}
 
-void Parameter::PrintOffset(const char * str,int offset){
+void Parameter::PrintOffset(const char * str, int offset){
     printf(str);
-    printf("%d",offset);
+    if(offset!=0) printf("%d", offset);
 }
 
 void Parameter::log(){
@@ -31,13 +31,13 @@ Instruction::Instruction(InstructionType type){
     Type = type;
 }
 
-Instruction::Instruction(InstructionType type,Parameter value){
+Instruction::Instruction(InstructionType type, Parameter value){
     ParametersNum = 1;
     Parameters[FIRST] = value;
     Type = type;
 }
 
-Instruction::Instruction(InstructionType type,Parameter first_value,Parameter second_value){
+Instruction::Instruction(InstructionType type, Parameter first_value, Parameter second_value){
     ParametersNum = 2;
     Parameters[FIRST] = first_value;
     Parameters[SECOND] = second_value;
@@ -46,7 +46,7 @@ Instruction::Instruction(InstructionType type,Parameter first_value,Parameter se
 
 Instruction* Instruction::Clone(){
     void* temp = malloc(sizeof(Instruction));
-    return (Instruction*)memcpy(temp,this,sizeof(Instruction));
+    return (Instruction*) memcpy(temp, this, sizeof(Instruction));
 }
 
 void Instruction::log(){
@@ -74,7 +74,7 @@ void Instruction::log(){
         default     : printf("OMG         "); break;
     }     
     printf(" ");
-    for(int i = 0 ; i < ParametersNum;i++){
+    for(int i = 0 ; i < ParametersNum; i++){
         Parameters[i].log();
         if(i < ParametersNum-1)
             printf(",");
@@ -83,7 +83,7 @@ void Instruction::log(){
 }
 
 InstructionList::InstructionList(int size){
-    this->instructions = (Instruction**)malloc(size*sizeof(Instruction*));
+    this->instructions = (Instruction**) malloc(size*sizeof(Instruction*));
     this->length = size;
     this->index = 0;
 }
@@ -99,7 +99,13 @@ void InstructionList::push(Instruction* instruction){
 
 void InstructionList::log(){
     for(int x = 0; x < this->index; x++){
-        printf("%d: ",x);
+        printf("%d: ", x);
         this->instructions[x]->log();
     }
+}
+
+InstructionList::~InstructionList(){
+    for(int x = 0; x < this->index; x++)
+        delete this->instructions[x];
+    free(instructions);
 }
