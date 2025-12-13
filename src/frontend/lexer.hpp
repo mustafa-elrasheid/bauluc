@@ -20,8 +20,6 @@ namespace Lexer{
     struct Token{
         char* content;
         TokenType type;
-        int binding_power_left;
-        int binding_power_right;
         Token(const char* token_str, TokenType type);
         ~Token();
     };

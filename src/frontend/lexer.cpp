@@ -32,12 +32,8 @@ int Lexer::count_tokens(const char* text, const char** keywords){
 
 Lexer::Token::Token(const char* token_str,TokenType type){
 	this->content = strdup(token_str);
-	this->binding_power_left = 10;
-	this->binding_power_right = 11;
 	this->type = type;
 	if(type == END_OF_FILE){
-		this->binding_power_left = -10;
-		this->binding_power_right = -10;
 	}
 }
 
@@ -46,26 +42,26 @@ Lexer::Token::~Token(){
 }
 
 Lexer::TokenList::TokenList(const char* text,const char** keywords){
-	Token** tokens = (Token**)malloc((count_tokens(text,keywords)+1)*sizeof(Token*));
+	Token** tokens = (Token**)malloc((count_tokens(text, keywords)+1) * sizeof(Token*));
 	int token_count = 0;
 	for(int index = 0; text[index] != '\0'; token_count++){
 		const char* keyword = check_keywords(text+index, keywords);
 		if(keyword != NULL){
-			tokens[token_count] = new Token(keyword,OPERATOR);
+			tokens[token_count] = new Token(keyword, OPERATOR);
 			index+=strlen(keyword);
 			continue;
 		}
 		int word_length = 0;
-		for(; !check_keywords(text+index+word_length, keywords)  && text[index+word_length]!= '\0'; word_length++);
+		for(; !check_keywords(text+index+word_length, keywords) && text[index+word_length]!= '\0'; word_length++);
 		char* atom_str = create_str(text+index, word_length);
-		tokens[token_count] = new Token(atom_str,ATOM);
+		tokens[token_count] = new Token(atom_str, ATOM);
 		free(atom_str);
 		index += word_length;
 	}
 	this->tokens = tokens;
 	this->index = 0;
 	this->length = token_count+1;
-	this->tokens[token_count] = new Token("EOF",END_OF_FILE);
+	this->tokens[token_count] = new Token("EOF", END_OF_FILE);
 }
 
 Lexer::Token*& Lexer::TokenList::operator[](int i) {
