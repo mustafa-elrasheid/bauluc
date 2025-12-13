@@ -21,7 +21,7 @@ int Lexer::check_prefix(const char* text, const char* prefix){
 				int i = 0;
 				for(;*(prefix_ptr+i) != ']';i++);
 				bool plus_dec = *(prefix_ptr+i+1) == '+';
-				for(const char* old_prefix_ptr = prefix_ptr; *prefix_ptr != ']' && text[text_index] != NULL; prefix_ptr++){
+				for(const char* old_prefix_ptr = prefix_ptr; *prefix_ptr != ']' && text[text_index] != '\0'; prefix_ptr++){
 					if(text[text_index] != *prefix_ptr ^ flip) continue;
 					text_index++;
 					if(plus_dec) prefix_ptr = old_prefix_ptr-1;

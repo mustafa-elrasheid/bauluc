@@ -94,7 +94,7 @@ int main (int argc,char**argv ){
 	GrammerRuleList* grammer_rules;
 	try{
 		token_rules = new GrammerRuleList(
-			new GrammerRule*[40]{
+			new GrammerRule*[41]{
 				/* keywords */
 				// functions
 				new GrammerRule("FUNCTION",            new Token("function",OPERATOR)),
@@ -143,13 +143,14 @@ int main (int argc,char**argv ){
 				new GrammerRule("SQUARE_BRACKET_CLOSE",new Token("]",OPERATOR)),
 				new GrammerRule("CURLY_BRACKET_OPEN",  new Token("{",OPERATOR)),
 				new GrammerRule("CURLY_BRACKET_CLOSE", new Token("}",OPERATOR)),
-				new GrammerRule("IDENTIFIER",          new Token("STR",ATOM)),
+				new GrammerRule("IDENTIFIER",          new Token("IDF",ATOM)),
 				new GrammerRule("NUMBER",              new Token("NUM",ATOM)),
+				new GrammerRule("STRING",              new Token("STR",OPERATOR)),
 			},
-			40
+			41
 		);
 		grammer_rules = new GrammerRuleList(
-			new GrammerRule*[43]{
+			new GrammerRule*[44]{
 				/* Identifiers*/
 				//strings should be there
 				new GrammerRule("Parameter",    new const char* [4]{"LET","IDENTIFIER","IDENTIFIER","COMA"},4),
@@ -159,6 +160,7 @@ int main (int argc,char**argv ){
 				/* Expressions*/
 				new GrammerRule("Expression",   new const char* [1]{"IDENTIFIER"},1),
 				new GrammerRule("Expression",   new const char* [1]{"NUMBER"},1),
+				new GrammerRule("Expression",   new const char* [1]{"STRING"},1),
 				new GrammerRule("Expression",   new const char* [4]{"Expression","SQUARE_BRACKET_OPEN","Expression",    "SQUARE_BRACKET_CLOSE"},4),
 				new GrammerRule("Expression",   new const char* [5]{"Expression","ROUND_BRACKET_OPEN", "ExpressionArg*","Expression?","ROUND_BRACKET_CLOSE"},5),
 				new GrammerRule("Expression",   new const char* [3]{"ROUND_BRACKET_OPEN","Expression","ROUND_BRACKET_CLOSE"},3),
@@ -202,7 +204,7 @@ int main (int argc,char**argv ){
 				new GrammerRule("Function",     new const char* [2]{"FunctionDef", "Statement"},2),
 				new GrammerRule("Functions",    new const char* [1]{"Function*"},1),
 			},
-			43
+			44
 		);
 		if(show_log){
 			token_rules->log();

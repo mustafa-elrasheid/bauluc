@@ -42,7 +42,8 @@ bool Expression::match_expression(GrammerRule* grammer_rule){
     if(
         (this->token->type == OPERATOR && !strcmp(this->token->content, grammer_rule->token->content)) ||
         (this->token->type == ATOM && !strcmp("NUM", grammer_rule->token->content) && isdigit(this->token->content[0])) ||
-        (this->token->type == ATOM && !strcmp("STR", grammer_rule->token->content) && !isdigit(this->token->content[0]))
+        (this->token->type == ATOM && !strcmp("IDF", grammer_rule->token->content) && !isdigit(this->token->content[0])) ||
+        (this->token->type == OPERATOR && !strcmp("STR", grammer_rule->token->content) && this->token->content[0] == '\"')
     )return true;
     return false;
 }

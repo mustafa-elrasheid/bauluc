@@ -56,6 +56,12 @@ void Program::parse_expression(Expression* expr, int deference_num = 0){
             instructions->push(new Instruction(DRFRNC));
         return;
     }
+    if(strcmp(expr_type,"STRING")==0){
+        instructions->push(new Instruction(PUSH, Parameter(data, strlen(this->data_section))));
+        data_section = (char*) realloc(data_section,strlen(data_section)+strlen(expr->expressions[0]->token->content));
+        strcat(data_section,expr->expressions[0]->token->content);
+        return;
+    }
     if(strcmp(expr_type,"ROUND_BRACKET_OPEN")==0){
         parse_expression(expr->expressions[1]);
         return;
