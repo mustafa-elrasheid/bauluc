@@ -66,7 +66,7 @@ int main (int argc,char**argv ){
 		strcat(text, suffix);
 		if(show_log) printf("file:\n%s\n",text);
 	}catch (const char* message){
-		printf("File error: %s\n",message);
+		printf("File error: %s.\n",message);
 		return -1;
 	}
 
@@ -84,7 +84,7 @@ int main (int argc,char**argv ){
 		token_stack->flip_to_operator(keywords2);
 		if(show_log)token_stack->log();
 	} catch(const char* message){
-		printf("Lexing Error: %s\n",message);
+		printf("Lexing Error: %s.\n",message);
 		return -1;
 	}
 	free(text);
@@ -208,7 +208,7 @@ int main (int argc,char**argv ){
 			grammer_rules->log();
 		}
 	} catch(const char* message){
-		printf("Grammer Error: %s\n",message);
+		printf("Grammer Error: %s.\n",message);
 		return -1;
 	}
 
@@ -219,7 +219,7 @@ int main (int argc,char**argv ){
 		if(show_log)exprs_list->log();
 		if(exprs_list->length > 1) throw "Parsing not finished";
 	} catch (const char* message){
-		printf("Parsing Error: %s\n",message);
+		printf("Parsing Error: %s.\n",message);
 		return -1;
 	}
 
@@ -229,7 +229,7 @@ int main (int argc,char**argv ){
 		program = new Program(exprs_list->expressions[0]);
 		if(show_log)program->instructions->log();
 	} catch(const char* message){
-		printf("Program Error: %s\n",message);
+		printf("Program Error: %s.\n",message);
 		return -1;
 	}
 	delete token_stack;
