@@ -56,7 +56,7 @@ ExpressionList::ExpressionList(TokenList* tokens, GrammerRuleList* grammer_rules
                 expr->identifier = grammer_rules->rules[i]->identifier;
                 break;
             }
-        if(expressions[x] != expr) error("Unexpected Token: \"%s\"\n",expr->token->content);
+        if(expressions[x] != expr) error("Unknown Token","Unexpected Token: \"%s\"\n",expr->token->content);
     }
 }
 

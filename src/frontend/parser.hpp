@@ -11,8 +11,6 @@ enum ExpressionType{
 
 struct Expression;
 
-
-
 struct ExpressionList{
     Expression** expressions;
     int length;
@@ -20,7 +18,7 @@ struct ExpressionList{
     ExpressionList(Expression** exprs, int count);
     ExpressionList();
     Expression*& operator[](int i);
-    Expression*  operator[](int i) const ;
+    Expression*  operator[](int i) const;
     void reduce(GrammerRuleList* grammer_rules);
     void log();
     ~ExpressionList();
