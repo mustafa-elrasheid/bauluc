@@ -22,14 +22,16 @@ Expression::~Expression(){
 void Expression::log(int depth){
     if(this->type == UNARY){
         for(int i = 0; i < depth; i++) printf("\t");
-        printf("Token: \"%s\" (identifier: \"%s\")\n",(this)->token->content, this->identifier);
+        printf("Token: \"%s\" (Content: \"%s\")\n", this->identifier,(this)->token->content);
         return;
     }
     for(int i = 0; i < depth; i++) printf("\t");
-    printf("%s, rule:",(this)->identifier);
-    for(int x = 0; x < this->matched_rule->length; x++)
-        printf("\"%s\",", this->matched_rule->expr_identifiers[x]);
-    printf(" ):\n");
+    printf("Expression: \"%s\" (Rule:",(this)->identifier);
+    for(int x = 0; x < this->matched_rule->length; x++){
+        printf("\"%s\"", this->matched_rule->expr_identifiers[x]);
+        if(x != this->matched_rule->length-1)printf(", ");
+    }
+    printf(" )\n");
     for(int x = 0; x < this->expressions.length; x++)
         this->expressions.expressions[x]->log(depth+1);
 }
