@@ -5,10 +5,11 @@ Label::Label(const char* identif, int _offset){
     this->offset = _offset;
 }
 
-LabelList::LabelList(int size){
+LabelList::LabelList(int size, bool allow_hoisting){
     this->index = -1;
     this->length = size;
     this->labels = (Label**)malloc(sizeof(Label*)*size);
+    this->allow_hoisting = allow_hoisting;
 }
 
 void LabelList::push(Label* label){
@@ -20,7 +21,8 @@ int LabelList::find(const char* identifier){
     for(int x = 0; x < this->index+1; x++){
         if(strcmp(identifier,this->labels[x]->identifier) == 0) return this->labels[x]->offset;
     }
-    error("Identifier: \"%s\" was not found",identifier);
+    if(!allow_hoisting)
+        error("Unknown Identifier","Identifier: \"%s\" was not found.\n",identifier);
     return -1;
 }
 
@@ -30,9 +32,8 @@ int LabelList::peak(){
 }
 
 void LabelList::empty(){
-    for(int x = 0; x < this->index+1; x++){
+    for(int x = 0; x < this->index+1; x++)
         delete this->labels[x];
-    }
     this->index = -1;
 }
 
