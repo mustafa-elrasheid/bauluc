@@ -10,10 +10,30 @@ char* Lexer::create_str(const char* str1, int length){
 int Lexer::check_prefix(const char* text, const char* prefix){
 	int text_index = 0;
 	for(int prefix_index = 0;prefix[prefix_index] != 0; prefix_index++,text_index++){
-		if(prefix[prefix_index] == '\\'){
+		if(prefix[prefix_index] == '['){
+			bool flip = false;
 			prefix_index++;
+			if(prefix[prefix_index] == '^'){
+				flip = true;
+				prefix_index++;
+			}
+			bool plus_dec = false;
+			int i = 0;
+			for(;prefix[prefix_index+i] != ']';i++);
+			if(prefix[prefix_index+i+1] == '+') plus_dec = true;
+			for(int old_prefix_index = prefix_index; prefix[prefix_index] != ']' && text[text_index] != NULL;prefix_index++){
+				if ((text[text_index] == prefix[prefix_index] && !flip) || (text[text_index] != prefix[prefix_index] && flip)){
+					text_index++;
+					if(plus_dec) prefix_index=old_prefix_index-1;
+					else prefix_index+=i;
+				}
+			}
+			if(plus_dec)prefix_index++;
+			text_index-=1;
+			continue;
 		}
-		if (text[text_index] != prefix[prefix_index]) return 0;
+		if(prefix[prefix_index] == '\\') prefix_index++;
+		if(text[text_index] != prefix[prefix_index]) return 0;
 	}
 	return text_index;
 }
