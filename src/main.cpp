@@ -70,18 +70,19 @@ int main (int argc,char**argv ){
 		return -1;
 	}
 
-	const char* keywords[]  = {">=","<=","\\|\\|","&&","!=","==","=>","!","@","#","\\$","%","\\^","&","\\*","\\(","\\)","-","\\+","=","\t"," ","{","}","\\[","\\]",":",";","'","\"[^\"]+\"","#[^\n]+\n","<",">","\\.",",","\\?","\\\\","\\|","\\/","\n",NULL};
-	const char* keywords2[]  = {"function","return","if","while","let","else","import","from","as",NULL};
+	const char* splitters[]  = {"\"[^\"]+\"","#[^\n]+\n",">=","<=","\\|\\|","&&","!=","==","=>","!","@","#","\\$","%","\\^","&","\\*","\\(","\\)","-","\\+","=","\t","    "," ","{","}","\\[","\\]",":",";","'","<",">","\\.",",","\\?","\\\\","\\|","\\/","\n",NULL};
+	const char* keywords[]  = {"function","return","if","while","let","else","import","from","as",NULL};
+	const char* denters[] = {"\t","    ",NULL};
 	
 	TokenList* token_stack;
 	try{
-		token_stack = new TokenList(text, keywords);
+		token_stack = new TokenList(text, splitters);
 		if(show_log)token_stack->log();
-		token_stack->offside("\t","{","}");
+		token_stack->offside(denters,"{","}");
 		if(show_log)token_stack->log();
 		token_stack->remove_whitespace();
 		if(show_log)token_stack->log();
-		token_stack->flip_to_operator(keywords2);
+		token_stack->flip_to_operator(keywords);
 		if(show_log)token_stack->log();
 	} catch(const char* message){
 		printf("Lexing Error: %s.\n",message);

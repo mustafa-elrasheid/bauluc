@@ -143,7 +143,7 @@ void Lexer::TokenList::flip_to_operator(const char** keywords){
 void Lexer::TokenList::remove_whitespace(){
 	for(int x = 0; x < this->length; x++){
 		Token* token = this->tokens[x];
-		const char* keywords[] = {" ", "\t", "\n", NULL};
+		const char* keywords[] = {" ", "\t", "\n","#[^\n]+\n", NULL};
 		if(check_keywords(token->content,keywords) != NULL){
 			memcpy(
 				&this->tokens[x],
@@ -157,8 +157,7 @@ void Lexer::TokenList::remove_whitespace(){
 	}
 }
 
-void Lexer::TokenList::offside(const char* whitespace, const char* indent, const char* dedent){
-	const char* keywords[] = {whitespace, NULL};
+void Lexer::TokenList::offside(const char** keywords, const char* indent, const char* dedent){
 	const char* newline[] = {"\n", NULL};
 	int prev_tab_count = 0;
 	for(int x = 0; x < this->length; x++){
