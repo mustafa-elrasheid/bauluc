@@ -30,6 +30,7 @@ int main (int argc,char**argv ){
 	}
 
 	bool show_log = false;
+	bool show_exit_code = false;
 	for(int i = 0; i < argc; i++){
 		if(strcmp("-info",argv[i]) == 0){
 			printf("Baulu Compiler\na compiler for the baulu programming language\n");
@@ -38,10 +39,11 @@ int main (int argc,char**argv ){
 		if(strcmp("-help",argv[i]) == 0){
 			printf("Usage: baulo <source-file> [options]\n");
 			printf("Options:\n");
-			printf("\t-info   :\tDisplay information about the compiler\n");
-			printf("\t-help   :\tDisplay this help message\n");
-			printf("\t-log    :\tEnable detailed logging during compilation and execution\n");
-			printf("\t-version:\tDisplay the compiler version\n");
+			printf("\t-info     :\tDisplay information about the compiler\n");
+			printf("\t-help     :\tDisplay this help message\n");
+			printf("\t-log      :\tEnable detailed logging during compilation and execution\n");
+			printf("\t-exit-code:\tDisplay the exit code for the program");
+			printf("\t-version  :\tDisplay the compiler version\n");
 			return 0;
 		}
 		if(strcmp("-log",argv[i]) == 0){
@@ -50,6 +52,9 @@ int main (int argc,char**argv ){
 		if(strcmp("-version",argv[i]) == 0){
 			printf("Baulu Compiler version 0.1.0\n");
 			return 0;
+		}
+		if(strcmp("-exit-code",argv[i]) == 0){
+			show_exit_code = true;
 		}
 	}
 
@@ -235,6 +240,7 @@ int main (int argc,char**argv ){
 	try{
 		vm = new VirtualMachine(program->entry_point, program->data_section, 1000, 20);
 		vm->Run(program->instructions, show_log);
+		printf("Program terminated with exit code: %d\n",vm->Registers[RegisterType::AX]);
 	} catch(const char* message){
 		printf("Runtime Error: %s\n",message);
 		return -1;
