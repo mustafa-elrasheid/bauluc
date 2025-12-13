@@ -7,17 +7,23 @@ char* Lexer::create_str(const char* str1, int length){
 	return new_str;
 }
 
-bool Lexer::check_prefix(const char* text, const char* prefix){
-	int index = 0;
-	for(;prefix[index] != 0; index ++)
-		if (text[index] != prefix[index]) return false;
-	return true;
+int Lexer::check_prefix(const char* text, const char* prefix){
+	int text_index = 0;
+	for(int prefix_index = 0;prefix[prefix_index] != 0; prefix_index++,text_index++){
+		if(prefix[prefix_index] == '\\'){
+			prefix_index++;
+		}
+		if (text[text_index] != prefix[prefix_index]) return 0;
+	}
+	return text_index;
 }
 
 const char* Lexer::check_keywords(const char* text, const char** keywords){
-	for(int i = 0; keywords[i] != NULL; i++)
-		if(check_prefix(text, keywords[i]))
-			return keywords[i];
+	for(int i = 0; keywords[i] != NULL; i++){
+		int prefix_length = check_prefix(text, keywords[i]);
+		if(prefix_length != 0)
+			return create_str(text,prefix_length);
+	}
 	return NULL;
 }
 
