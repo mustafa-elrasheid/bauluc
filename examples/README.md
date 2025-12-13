@@ -1,0 +1,1 @@
+This directory contains a few examples in this programming language you can learn from.
