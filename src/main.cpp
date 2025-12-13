@@ -217,6 +217,7 @@ int main (int argc,char**argv ){
 		exprs_list = new ExpressionList(token_stack, token_rules);
 		exprs_list->reduce(grammer_rules);
 		if(show_log)exprs_list->log();
+		if(exprs_list->length > 1) throw "Parsing not finished";
 	} catch (const char* message){
 		printf("Parsing Error: %s\n",message);
 		return -1;
