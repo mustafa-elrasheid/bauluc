@@ -36,7 +36,7 @@ namespace Lexer{
         Token*& operator[](int i);
         Token*  operator[](int i) const ;
         void flip_to_operator(const char** keywords);
-        void remove_whitespace();
+        void remove_whitespace(const char** keywords);
         void offside(const char** keywords, const char* indent, const char* dedent);
         void insert(Token* token, int index);
     };

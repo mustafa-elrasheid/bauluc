@@ -19,16 +19,16 @@ int Lexer::check_prefix(const char* text, const char* prefix){
 					prefix_ptr++;
 				}
 				int i = 0;
-				for(;*(prefix_ptr+i) != ']';i++);
+				for(;*(prefix_ptr+i) != ']'; i++);
 				bool plus_dec = *(prefix_ptr+i+1) == '+';
-				for(const char* old_prefix_ptr = prefix_ptr; *prefix_ptr != ']' && text[text_index] != '\0'; prefix_ptr++){
+				for(const char* old_prefix_ptr = prefix_ptr; *prefix_ptr != ']' && text[text_index] != '\0' && text[text_index] != '\n'; prefix_ptr++){
 					if(text[text_index] != *prefix_ptr ^ flip) continue;
 					text_index++;
 					if(plus_dec) prefix_ptr = old_prefix_ptr-1;
 					else prefix_ptr+=i;
 				}
-				if(plus_dec)prefix_ptr++;
-				text_index-=1;
+				if(plus_dec) prefix_ptr++;
+				text_index -= 1;
 				break;
 			}
 			case '\\':
@@ -44,8 +44,7 @@ int Lexer::check_prefix(const char* text, const char* prefix){
 const char* Lexer::check_keywords(const char* text, const char** keywords){
 	for(int i = 0; keywords[i] != NULL; i++){
 		int prefix_length = check_prefix(text, keywords[i]);
-		if(prefix_length != 0)
-			return create_str(text,prefix_length);
+		if(prefix_length != 0) return create_str(text, prefix_length);
 	}
 	return NULL;
 }
@@ -53,8 +52,11 @@ const char* Lexer::check_keywords(const char* text, const char** keywords){
 int Lexer::count_tokens(const char* text, const char** keywords){
 	int token_count = 0;
 	for(int index = 0; text[index] != '\0'; token_count++){
-		if(check_keywords(text+index,keywords)){index++;continue;}
-		for(;!check_keywords(text+index,keywords) && text[index]!= '\0';index++);
+		if(check_keywords(text+index, keywords)){
+			index++;
+			continue;
+		}
+		for(; !check_keywords(text+index, keywords) && text[index]!= '\0'; index++);
 	}
 	return token_count;
 }
@@ -62,8 +64,6 @@ int Lexer::count_tokens(const char* text, const char** keywords){
 Lexer::Token::Token(const char* token_str,TokenType type){
 	this->content = strdup(token_str);
 	this->type = type;
-	if(type == END_OF_FILE){
-	}
 }
 
 Lexer::Token::~Token(){
@@ -77,7 +77,7 @@ Lexer::TokenList::TokenList(const char* text,const char** keywords){
 		const char* keyword = check_keywords(text+index, keywords);
 		if(keyword != NULL){
 			tokens[token_count] = new Token(keyword, OPERATOR);
-			index+=strlen(keyword);
+			index += strlen(keyword);
 			continue;
 		}
 		int word_length = 0;
@@ -102,13 +102,13 @@ Lexer::Token* Lexer::TokenList::operator[](int i) const {
 }
 
 const Lexer::Token* Lexer::TokenList::next(){
-    Token* value = this->tokens[this->index];
-    this->index++;
-    return value;
+	Token* value = this->tokens[this->index];
+	this->index++;
+	return value;
 }
 
 const Lexer::Token* Lexer::TokenList::peek(){
-    return this->tokens[this->index];
+	return this->tokens[this->index];
 }
 
 Lexer::TokenList::~TokenList(){
@@ -119,7 +119,7 @@ Lexer::TokenList::~TokenList(){
 
 void Lexer::TokenList::log(){
 	printf("[");
-	for(int x= 0; x < this->length; x++){
+	for(int x = 0; x < this->length; x++){
 		const char* token_content = this->tokens[x]->content;
 		switch (this->tokens[x]->type){
 			case OPERATOR:
@@ -140,21 +140,20 @@ void Lexer::TokenList::log(){
 void Lexer::TokenList::flip_to_operator(const char** keywords){
 	for(int x = 0; x < this->length; x++)
 		for(int i = 0; keywords[i] != 0; i++)
-			if(strcmp(this->tokens[x]->content,keywords[i]) == 0)this->tokens[x]->type = OPERATOR;
+			if(strcmp(this->tokens[x]->content, keywords[i]) == 0) this->tokens[x]->type = OPERATOR;
 }
 
-void Lexer::TokenList::remove_whitespace(){
+void Lexer::TokenList::remove_whitespace(const char** keywords){
 	for(int x = 0; x < this->length; x++){
 		Token* token = this->tokens[x];
-		const char* keywords[] = {" ", "\t", "\n","#[^\n]+\n", NULL};
 		if(check_keywords(token->content,keywords) != NULL){
 			memcpy(
 				&this->tokens[x],
 				&this->tokens[x+1],
 				sizeof(Token*)*(this->length-x-1)
 			);
-			this->length-=1;
-			x-=1;
+			this->length -= 1;
+			x -=1 ;
 			delete token;
 		}
 	}
@@ -187,5 +186,5 @@ void Lexer::TokenList::insert(Token* token, int index){
 		sizeof(Token*)*(this->length-index)
 	);
 	this->tokens[index] = token;
-	this->length+=1;
+	this->length += 1;
 }
