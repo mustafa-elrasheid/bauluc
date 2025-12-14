@@ -9,10 +9,7 @@
 #define SECOND 1
 
 enum InstructionType{
-	// 0 for no  parameter
-	// 1 for one parameter
-	// 2 for two parameters
-	/* Binary Operators  */
+	// Binary Operators
 	MOV,  //  would move the top element in the stack to the address provided below or move from register to register
 	ADD,  // adds two elements at the top of the stack or adds one register to the other
 	SUB,  // subtracts two elements at the top of the stack or subtracts one register to the other
@@ -25,29 +22,43 @@ enum InstructionType{
 	NOT,  // bitwise flip the element at the top of the stack or flips one register
 	CMP,  // compares two elements at the top of the stack or compares one register to the other
 	CMPB, // compares who's bigger two elements at the top of the stack or compares who's bigger one register to the other
-	/* control flow */
-	JMP, // 1 ( pop only accept regesters)
+	// control flow
+	JMP, // jumps to a provided address
 	NOP, // does nothing
 	JN,  // jumps to address of CR is 0
-	/* stack related */
+	// stack related
 	PUSH, // pushes and element to the stack
 	POP,  // pops an element from the stock to a register
 	DRFRNC, // dereferences the value at the top of the stack
-	/* other */
-	SO_CALL, // 2 first: function name and library pointer, second: agrument number
-	EXIT,    // special exit code
+	// other
+	SO_CALL, // first: function name and library pointer, second: agrument number
+	EXIT,
+	RET,
+	LEAVE,
+	CALL
 };
 
 enum RegisterType{
-	Null, // provides no register, used as offset
-	data, // data section pointer
-	SP,   // stack pointer register
-	BP,   // base pointer register
-	AX,   // return value register
-	DI,   // general use register
-	BX,   // general use register
-	CR,   // comparetion register
-	IP    // instruction pointer
+	Null,
+	data,
+	RIP,
+	RSP,
+	RBP,
+	RCR,
+	RAX,
+	RBX,
+	RCX,
+	RDX,
+	RDI,
+	RSI,
+	R8,
+	R9,
+	R10,
+	R11,
+	R12,
+	R13,
+	R14,
+	R15,
 };
 
 struct Parameter{
