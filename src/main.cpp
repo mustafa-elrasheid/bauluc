@@ -154,7 +154,7 @@ int main (int argc,char**argv ){
 			41
 		);
 		grammer_rules = new GrammerRuleList(
-			new GrammerRule*[44]{
+			new GrammerRule*[45]{
 				/* Identifiers*/
 				//strings should be there
 				new GrammerRule("Parameter",    new const char* [4]{"LET","IDENTIFIER","IDENTIFIER","COMA"},4),
@@ -165,8 +165,9 @@ int main (int argc,char**argv ){
 				new GrammerRule("Expression",   new const char* [1]{"IDENTIFIER"},1),
 				new GrammerRule("Expression",   new const char* [1]{"NUMBER"},1),
 				new GrammerRule("Expression",   new const char* [1]{"STRING"},1),
-				new GrammerRule("Expression",   new const char* [4]{"Expression","SQUARE_BRACKET_OPEN","Expression",    "SQUARE_BRACKET_CLOSE"},4),
-				new GrammerRule("Expression",   new const char* [5]{"Expression","ROUND_BRACKET_OPEN", "ExpressionArg*","Expression?","ROUND_BRACKET_CLOSE"},5),
+				new GrammerRule("CallIDF",      new const char* [2]{"Expression","ROUND_BRACKET_OPEN"},2),
+				new GrammerRule("Expression",   new const char* [3]{"CallIDF","Expression",    "SQUARE_BRACKET_CLOSE"},3),
+				new GrammerRule("Expression",   new const char* [4]{"CallIDF", "ExpressionArg*","Expression?","ROUND_BRACKET_CLOSE"},4),
 				new GrammerRule("Expression",   new const char* [3]{"ROUND_BRACKET_OPEN","Expression","ROUND_BRACKET_CLOSE"},3),
 				new GrammerRule("Expression",   new const char* [3]{"Expression", "MODULO",              "Expression"}, 3),
 				new GrammerRule("Expression",   new const char* [3]{"Expression", "IS_EQUAL",            "Expression"}, 3),
@@ -208,7 +209,7 @@ int main (int argc,char**argv ){
 				new GrammerRule("Function",     new const char* [2]{"FunctionDef", "Statement"},2),
 				new GrammerRule("Functions",    new const char* [1]{"Function*"},1),
 			},
-			44
+			45
 		);
 		if(show_log){
 			token_rules->log();

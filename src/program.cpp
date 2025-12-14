@@ -96,16 +96,18 @@ void Program::parse_expression(Expression* expr, int deference_num = 0){
     }
     if(strcmp(expr_type,"Expression") == 0 && strcmp(expr->expressions[2]->identifier,"Expression") == 0 && expr->expressions.length == 3){
         const char* operation_type = expr->expressions[1]->identifier;
-        if(strcmp(operation_type,"MODULO") == 0){
-            parse_expression(expr->expressions[0]);
-            parse_expression(expr->expressions[2]);
-            instructions->push(new Instruction(REM));
+        if(strcmp(operation_type,"DOT") == 0){
+            throw "this feature is not yet implemented";
             return;
-        } 
-        if(strcmp(operation_type,"IS_EQUAL") == 0){
-            parse_expression(expr->expressions[0]);
+        }
+        if(strcmp(operation_type,"ARROW") == 0){
+            throw "this feature is not yet implemented";
+            return;
+        }
+        if(strcmp(operation_type,"EQUAL") == 0){
+            parse_expression(expr->expressions[0],-1);
             parse_expression(expr->expressions[2]);
-            instructions->push(new Instruction(CMP));
+            instructions->push(new Instruction(MOV));
             return;
         }
         if(strcmp(operation_type,"ISNT_EQUAL") == 0){
@@ -113,12 +115,6 @@ void Program::parse_expression(Expression* expr, int deference_num = 0){
             parse_expression(expr->expressions[2]);
             instructions->push(new Instruction(CMP));
             instructions->push(new Instruction(NOT));
-            return;
-        }
-        if(strcmp(operation_type,"IS_GREATER") == 0){
-            parse_expression(expr->expressions[0]);
-            parse_expression(expr->expressions[2]);
-            instructions->push(new Instruction(CMPB));
             return;
         }
         if(strcmp(operation_type,"IS_SMALLER") == 0){
@@ -145,6 +141,24 @@ void Program::parse_expression(Expression* expr, int deference_num = 0){
             parse_expression(expr->expressions[2]);
             instructions->push(new Instruction(CMP));
             instructions->push(new Instruction(OR));
+            return;
+        }
+        if(strcmp(operation_type,"IS_GREATER") == 0){
+            parse_expression(expr->expressions[0]);
+            parse_expression(expr->expressions[2]);
+            instructions->push(new Instruction(CMPB));
+            return;
+        }
+        if(strcmp(operation_type,"MODULO") == 0){
+            parse_expression(expr->expressions[0]);
+            parse_expression(expr->expressions[2]);
+            instructions->push(new Instruction(REM));
+            return;
+        } 
+        if(strcmp(operation_type,"IS_EQUAL") == 0){
+            parse_expression(expr->expressions[0]);
+            parse_expression(expr->expressions[2]);
+            instructions->push(new Instruction(CMP));
             return;
         }
         if(strcmp(expr_type,"LOGIC_AND") == 0){
@@ -207,34 +221,19 @@ void Program::parse_expression(Expression* expr, int deference_num = 0){
             instructions->push(new Instruction(SUB));
             return;
         }
-
-        if(strcmp(operation_type,"DOT") == 0){
-            throw "this feature is not yet implemented";
-            return;
-        }
-        if(strcmp(operation_type,"ARROW") == 0){
-            throw "this feature is not yet implemented";
-            return;
-        }
-        if(strcmp(operation_type,"EQUAL") == 0){
-            parse_expression(expr->expressions[0],-1);
-            parse_expression(expr->expressions[2]);
-            instructions->push(new Instruction(MOV));
-            return;
-        }
-        return;
+        error("No Operator found","No matching operator for EXPRESSION OPERATOR EXPRESSION was found.");
     }
-    if(strcmp(expr_type,"Expression") == 0 && strcmp(expr->expressions[1]->identifier,"ROUND_BRACKET_OPEN") == 0){
+    if(strcmp(expr_type,"CallIDF") == 0 && strcmp(expr->expressions[0]->expressions[1]->identifier,"ROUND_BRACKET_OPEN") == 0){
         Instruction* jmp_int = new Instruction(PUSH,Parameter(Null,0));
 		instructions->push(jmp_int); 
 
 		instructions->push(new Instruction(PUSH,Parameter(Null,0)));
-        if(expr->expressions.length > 3){
-            for(int x = 0; x < expr->expressions.length-4; x++)
-                parse_expression(expr->expressions[2+x]->expressions[0]);
-            parse_expression(expr->expressions[expr->expressions.length-2]);
+        if(expr->expressions.length > 2){
             for(int x = 0; x < expr->expressions.length-3; x++)
-                instructions->push(new Instruction(POP, Parameter(AX, 0)));
+                parse_expression(expr->expressions[1+x]->expressions[0]);
+            parse_expression(expr->expressions[expr->expressions.length-2]);
+            for(int x = 0; x < expr->expressions.length-2; x++)
+                instructions->push(new Instruction(POP, Parameter(RAX, 0)));
         }
 		
 		instructions->push(new Instruction(POP, Parameter(AX, 0)));
