@@ -9,22 +9,24 @@ Parameter::Parameter(){}
 
 void Parameter::PrintOffset(const char * str, int offset){
     printf(str);
-    if(offset!=0) printf("%d", offset);
+    if(offset != 0) printf("%d", offset);
 }
 
 void Parameter::log(){
     switch (type){
-        case Null: printf("   %d", this->offset); break;
-        case SP  : printf("SP %d", this->offset); break;
-        case BP  : printf("BP %d", this->offset); break;
-        case AX  : printf("AX %d", this->offset); break;
-        case DI  : printf("DI %d", this->offset); break;
-        case BX  : printf("BX %d", this->offset); break;
-        case CR  : printf("CR %d", this->offset); break;
-        default  : printf("?? %d", this->offset); break;
+        case Null: printf(""  ); break;
+        case RSP : printf("RSP"); break;
+        case RBP : printf("RBP"); break;
+        case RAX : printf("RAX"); break;
+        case RDI : printf("RDI"); break;
+        case RBX : printf("RBX"); break;
+        case RCR : printf("RCR"); break;
+        case data: printf("DT"); break;
+        default  : printf("??"); break;
     }
+    if(type == Null)printf("%d", this->offset);
+    else if(offset != 0)printf("%+d", this->offset);
 }
-
 
 Instruction::Instruction(InstructionType type){
     ParametersNum = 0;
@@ -44,40 +46,38 @@ Instruction::Instruction(InstructionType type, Parameter first_value, Parameter 
     Type = type;
 }
 
-Instruction* Instruction::Clone(){
-    void* temp = malloc(sizeof(Instruction));
-    return (Instruction*) memcpy(temp, this, sizeof(Instruction));
-}
-
 void Instruction::log(){
     switch (Type){     
-        case MOV    : printf("Mov         "); break;
-        case PUSH   : printf("Push        "); break;
-        case POP    : printf("Pop         "); break;
-        case ADD    : printf("Add         "); break;
-        case SUB    : printf("Sub         "); break;
-        case DIV    : printf("Div         "); break;
-        case MUL    : printf("Mul         "); break;
-        case REM    : printf("Rem         "); break;
-        case AND    : printf("And         "); break;
-        case OR     : printf("Or          "); break;
-        case XOR    : printf("Xor         "); break;
-        case NOT    : printf("Not         "); break;
-        case CMP    : printf("Cmp         "); break;
-        case CMPB   : printf("CmpB        "); break;
-        case JMP    : printf("Jmp         "); break;
-        case NOP    : printf("Nop         "); break;
-        case JN     : printf("JN          "); break;
-        case DRFRNC : printf("drfrnc      "); break;
-        case SO_CALL: printf("so_call     "); break;
-        case EXIT   : printf("exit        "); break;
-        default     : printf("OMG         "); break;
+        case MOV:     printf("\tmov     "); break;
+        case PUSH:    printf("\tpush    "); break;
+        case POP:     printf("\tpop     "); break;
+        case ADD:     printf("\tadd     "); break;
+        case SUB:     printf("\tsub     "); break;
+        case DIV:     printf("\tdiv     "); break;
+        case MUL:     printf("\tmul     "); break;
+        case REM:     printf("\trem     "); break;
+        case AND:     printf("\tAnd     "); break;
+        case OR:      printf("\tor      "); break;
+        case XOR:     printf("\txor     "); break;
+        case NOT:     printf("\tnot     "); break;
+        case CMP:     printf("\tcmp     "); break;
+        case CMPB:    printf("\tcmpB    "); break;
+        case JMP:     printf("\tjmp     "); break;
+        case NOP:     printf("nop       "); break;
+        case JN:      printf("\tjn      "); break;
+        case DRFRNC:  printf("\tdrfrnc  "); break;
+        case SO_CALL: printf("\tso_call "); break;
+        case EXIT:    printf("\texit    "); break;
+        case LEAVE:   printf("\tleave   "); break;
+        case RET:     printf("\tret     "); break;
+        case CALL:    printf("\tcall    "); break;
+        default:      printf("\tOMG     "); break;
     }     
     printf(" ");
     for(int i = 0 ; i < ParametersNum; i++){
         Parameters[i].log();
         if(i < ParametersNum-1)
-            printf(",");
+            printf(", ");
     }
     printf("\n");
 }
@@ -85,7 +85,7 @@ void Instruction::log(){
 InstructionList::InstructionList(int size){
     this->instructions = (Instruction**) malloc(size*sizeof(Instruction*));
     this->length = size;
-    this->index = 0;
+    this->index = -1;
 }
 
 void InstructionList::push(Instruction* instruction){
@@ -93,19 +93,23 @@ void InstructionList::push(Instruction* instruction){
         this->length *= 2;
         this->instructions = (Instruction**) realloc(this->instructions, this->length*sizeof(Instruction*));
     }
-    this->instructions[index] = instruction;
     this->index++;
+    this->instructions[index] = instruction;
 }
 
 void InstructionList::log(){
-    for(int x = 0; x < this->index; x++){
+    for(int x = 0; x < this->index+1; x++){
         printf("%d: ", x);
         this->instructions[x]->log();
     }
 }
 
+Instruction* InstructionList::peak(){
+    return this->instructions[index];
+}
+
 InstructionList::~InstructionList(){
-    for(int x = 0; x < this->index; x++)
+    for(int x = 0; x < this->index+1; x++)
         delete this->instructions[x];
     free(instructions);
 }
