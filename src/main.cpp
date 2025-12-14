@@ -12,7 +12,7 @@ using namespace Lexer;
 
 char* read_file(char* path){
 	FILE* file = fopen(path,"r");
-	if(file == NULL)throw "file not found";
+	if(file == NULL) throw "file not found";
 	fseek(file, 0L, SEEK_END);
 	int file_size = ftell(file);
 	char* buffer = (char*)calloc(1, file_size+1);
@@ -46,16 +46,14 @@ int main (int argc,char**argv ){
 			printf("\t-version  :\tDisplay the compiler version\n");
 			return 0;
 		}
-		if(strcmp("-log",argv[i]) == 0){
+		if(strcmp("-log",argv[i]) == 0)
 			show_log = true;
-		}
 		if(strcmp("-version",argv[i]) == 0){
 			printf("Baulu Compiler version 0.1.0\n");
 			return 0;
 		}
-		if(strcmp("-exit-code",argv[i]) == 0){
+		if(strcmp("-exit-code",argv[i]) == 0)
 			show_exit_code = true;
-		}
 	}
 
 	char* text;
@@ -70,9 +68,15 @@ int main (int argc,char**argv ){
 		return -1;
 	}
 
-	const char* splitters[]  = {"\"[^\"]+\"","#[^\n]+\n",">=","<=","\\|\\|","&&","!=","==","=>","!","@","#","\\$","%","\\^","&","\\*","\\(","\\)","-","\\+","=","\t","    "," ","{","}","\\[","\\]",":",";","'","<",">","\\.",",","\\?","\\\\","\\|","\\/","\n",NULL};
-	const char* keywords[]  = {"function","return","if","while","let","else","import","from","as",NULL};
-	const char* denters[] = {"\t","    ",NULL};
+	const char* splitters[]  = {
+		"\"[^\"]+\"", "#[^\n]+\n", "    ", " ", "\t",
+		">=", "<=", "\\|\\|", "&&", "!=", "==", "=>", "<", ">",
+		"!", "@", "#", "\\$", "%", "\\^", "&", "\\*", "-", "\\+", "=",
+		"{", "}", "\\[", "\\]", "\\(", "\\)",
+		":", ";", "'", "\\.", ",", "\\?", "\\\\", "\\|", "\\/", "\n", NULL};
+	const char* keywords[]   = {"function", "return", "if", "while", "let", "else", "import", "from", "as", NULL};
+	const char* denters[]    = {"\t", "    ", NULL};
+	const char* whitespace[] = {" ", "\t", "\n","#[^\n]+\n", NULL};
 	
 	TokenList* token_stack;
 	try{
@@ -80,7 +84,7 @@ int main (int argc,char**argv ){
 		if(show_log)token_stack->log();
 		token_stack->offside(denters,"{","}");
 		if(show_log)token_stack->log();
-		token_stack->remove_whitespace();
+		token_stack->remove_whitespace(whitespace);
 		if(show_log)token_stack->log();
 		token_stack->flip_to_operator(keywords);
 		if(show_log)token_stack->log();
