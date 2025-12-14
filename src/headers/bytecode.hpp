@@ -88,5 +88,6 @@ struct InstructionList{
 	InstructionList(int size = 1000);
 	void push(Instruction* instruction);
 	void log();
+	Instruction* peak();
 	~InstructionList();
 };

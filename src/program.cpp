@@ -1,65 +1,20 @@
 #include "headers/program.hpp"
 
-Label::Label(const char* identif, int _offset){
-    this->identifier = identif;
-    this->offset = _offset;
-}
-
-LabelList::LabelList(int size, bool allow_hoisting){
-    this->index = -1;
-    this->length = size;
-    this->labels = (Label**)malloc(sizeof(Label*)*size);
-    this->allow_hoisting = allow_hoisting;
-}
-
-void LabelList::push(Label* label){
-    this->index += 1;
-    this->labels[index] = label;
-}
-
-int LabelList::find(const char* identifier){
-    for(int x = 0; x < this->index+1; x++){
-        if(strcmp(identifier,this->labels[x]->identifier) == 0) return this->labels[x]->offset;
-    }
-    if(!allow_hoisting)
-        error("Unknown Identifier","Identifier: \"%s\" was not found.\n",identifier);
-    return -1;
-}
-
-int LabelList::peak(){
-    if(index == -1) return 0;
-    return this->labels[index]->offset;
-}
-
-void LabelList::empty(){
-    for(int x = 0; x < this->index+1; x++)
-        delete this->labels[x];
-    this->index = -1;
-}
-
-LabelList::~LabelList(){
-    for(int x = 0; x < this->index+1; x++)
-        delete this->labels[x];
-    free(labels);
-}
-
-int Max(int x,int y){
-	if(x > y) return x;
-	return y;
-}
-
 void Program::parse_expression(Expression* expr, int deference_num = 0){
     const char* expr_type = expr->expressions[0]->identifier;
     if(strcmp(expr_type,"IDENTIFIER")==0){
-        instructions->push(new Instruction(PUSH, Parameter(BP, -var_labels->find(expr->expressions[0]->token->content))));
+        instructions->push(new Instruction(PUSH, Parameter(RBP, 0)));
+        var_labels->find(expr->expressions[0]->token->content,(int*)&instructions->peak()->Parameters[0].offset);
+        instructions->peak()->Parameters[0].offset*=-1;
         for(int x = 0; x < deference_num+1; x++)
             instructions->push(new Instruction(DRFRNC));
         return;
     }
     if(strcmp(expr_type,"STRING")==0){
-        instructions->push(new Instruction(PUSH, Parameter(data, strlen(this->data_section))));
-        data_section = (char*) realloc(data_section,strlen(data_section)+strlen(expr->expressions[0]->token->content));
-        strcat(data_section,expr->expressions[0]->token->content);
+        // TODO: this is utter junk
+        instructions->push(new Instruction(PUSH, Parameter(data, strlen(this->data_section)+1)));
+        data_section = (char*) realloc(data_section,strlen(data_section)+1+strlen(expr->expressions[0]->token->content)+1);
+        memcpy(strlen(this->data_section)+data_section+1,expr->expressions[0]->token->content,strlen(expr->expressions[0]->token->content));
         return;
     }
     if(strcmp(expr_type,"ROUND_BRACKET_OPEN")==0){
@@ -236,20 +191,14 @@ void Program::parse_expression(Expression* expr, int deference_num = 0){
                 instructions->push(new Instruction(POP, Parameter(RAX, 0)));
         }
 		
-		instructions->push(new Instruction(POP, Parameter(AX, 0)));
+		instructions->push(new Instruction(POP, Parameter(RAX, 0)));
 
-		instructions->push(
-			new Instruction(
-				JMP,
-				Parameter(
-					Null,
-					function_labels->find(expr->expressions[0]->expressions[0]->token->content)
-		)));
+		instructions->push(new Instruction(JMP, Parameter(Null,0)));
+        function_labels->find(expr->expressions[0]->expressions[0]->expressions[0]->token->content,(int*)&instructions->peak()->Parameters[0].offset);
 
-		instructions->push(new Instruction(NOP)); 
-		jmp_int->Parameters[FIRST].offset = instructions->index-1;
+		jmp_int->Parameters[FIRST].offset = instructions->index;
 
-		instructions->push(new Instruction(PUSH,Parameter(AX,0)));
+		instructions->push(new Instruction(PUSH,Parameter(RAX,0)));
     }
 }
 
@@ -257,51 +206,48 @@ void Program::parse_statement(Expression* expr, int* stack_size){
     const char* expr_type = expr->expressions[0]->identifier;
     if(strcmp(expr_type,"RETURN")==0){
         parse_expression(expr->expressions[1]);
-        instructions->push(new Instruction(POP, Parameter(AX, 0)));
-        instructions->push(new Instruction(MOV, Parameter(SP, 0), Parameter(BP, 0)));
-        instructions->push(new Instruction(POP, Parameter(BP, 0))); 
-        instructions->push(new Instruction(POP, Parameter(BX, 0))); 
-        instructions->push(new Instruction(JMP, Parameter(BX, 0))); 
+        instructions->push(new Instruction(POP, Parameter(RAX, 0)));
+        instructions->push(new Instruction(LEAVE)); 
+        instructions->push(new Instruction(RET));
         return;
     }
     if(strcmp(expr_type,"IF")==0){
         parse_expression(expr->expressions[1]);
-        instructions->push(new Instruction(POP, Parameter(CR,0)));
-        // skip if false by jumping ,continu if true by the command failing. the jump to line N is unknown
-        Instruction* jmp_instruction = new Instruction(JN, Parameter(Null,0));
-        instructions->push(jmp_instruction);
+        instructions->push(new Instruction(POP, Parameter(RCR,0)));
+        instructions->push(new Instruction(JN, Parameter(Null,0)));
+        Instruction* jmp_instruction = instructions->peak();
         parse_statement(expr->expressions[3],stack_size);
         instructions->push(new Instruction(NOP));
-        jmp_instruction->Parameters[0].offset = instructions->index - 1;
+        jmp_instruction->Parameters[0].offset = instructions->index;
         return;
     }
     if(strcmp(expr_type,"WHILE")==0){
         instructions->push(new Instruction(NOP));
-        int comparation_line =  instructions->index - 1;
+        int comparation_line =  instructions->index;
         parse_expression(expr->expressions[1]);
-        instructions->push(            new Instruction(POP, Parameter(CR,   0)));
+        instructions->push(            new Instruction(POP, Parameter(RCR,   0)));
         Instruction* jmp_instruction = new Instruction(JN , Parameter(Null, 0));
         instructions->push(jmp_instruction);
         parse_statement(expr->expressions[3],stack_size);
         instructions->push(new Instruction(JMP, Parameter(Null, comparation_line)));
         instructions->push(new Instruction(NOP));
-        jmp_instruction->Parameters[0].offset = instructions->index - 1;
+        jmp_instruction->Parameters[0].offset = instructions->index;
         return;
     }
     if(strcmp(expr_type,"LET")==0){
         *stack_size += 8;
         var_labels->push(new Label(expr->expressions[2]->expressions[0]->expressions[0]->token->content,var_labels->peak()+8));
         parse_expression(expr->expressions[2]);
-        instructions->push(new Instruction(POP, Parameter(AX, 0)));
+        instructions->push(new Instruction(POP, Parameter(RAX, 0)));
         return;
     }
     if(strcmp(expr_type,"Expression")==0){
         parse_expression(expr->expressions[0]);
-        instructions->push(new Instruction(POP, Parameter(AX, 0)));
+        instructions->push(new Instruction(POP, Parameter(RAX, 0)));
         return;
     }
     if(strcmp(expr_type,"CURLY_BRACKET_OPEN")==0){
-        Instruction* StackAllocter = new Instruction(SUB, Parameter(SP, 0), Parameter(Null, 0));
+        Instruction* StackAllocter = new Instruction(SUB, Parameter(RSP, 0), Parameter(Null, 0));
         instructions->push(StackAllocter);
         int statement_stack_size = 0;
         int old_label_index = var_labels->index;
@@ -309,7 +255,7 @@ void Program::parse_statement(Expression* expr, int* stack_size){
             parse_statement(expr->expressions[x],&statement_stack_size);
         var_labels->index = old_label_index;
         StackAllocter->Parameters[SECOND].offset = statement_stack_size;
-        instructions->push(new Instruction(ADD, Parameter(SP, 0), Parameter(Null, statement_stack_size)));
+        if(statement_stack_size > 0) instructions->push(new Instruction(ADD, Parameter(RSP, 0), Parameter(Null, statement_stack_size)));
     }
 }
 
@@ -317,12 +263,11 @@ void Program::parse_function(Expression* expr){
     Expression* function_definition = expr->expressions[0];
     const char* function_name = function_definition->expressions[1]->token->content;
     bool is_start = strcmp(function_name,"_start" ) == 0;
+    instructions->push(new Instruction(NOP));
     if(is_start) entry_point = instructions->index;
     function_labels->push(new Label(function_name,instructions->index));
-
-    instructions->push(new Instruction(NOP));
-    instructions->push(new Instruction(PUSH, Parameter(BP, 0)));
-    instructions->push(new Instruction(MOV , Parameter(BP, 0), Parameter(SP, 0)));
+    instructions->push(new Instruction(PUSH, Parameter(RBP, 0)));
+    instructions->push(new Instruction(MOV , Parameter(RBP, 0), Parameter(RSP, 0)));
     
     int stack_size = 0;
     
@@ -335,7 +280,7 @@ void Program::parse_function(Expression* expr){
             var_labels->push(new Label(function_definition->expressions[x]->expressions[2]->token->content,8));
             stack_size += 8;
         }
-        instructions->push(new Instruction(SUB, Parameter(SP, 0), Parameter(Null, stack_size)));
+        if(stack_size > 0) instructions->push(new Instruction(SUB, Parameter(RSP, 0), Parameter(Null, stack_size)));
     }
     parse_statement(expr->expressions[1], &stack_size);
     var_labels->empty();
@@ -343,11 +288,9 @@ void Program::parse_function(Expression* expr){
         instructions->push(new Instruction(EXIT));
         return;
     }
-    if(instructions->instructions[instructions->index-1]->Type != JMP){
-        instructions->push(new Instruction(MOV, Parameter(SP, 0), Parameter(BP, 0)));
-        instructions->push(new Instruction(POP, Parameter(BP, 0))); 
-        instructions->push(new Instruction(POP, Parameter(BX, 0))); 
-        instructions->push(new Instruction(JMP, Parameter(BX, 0))); 
+    if(instructions->peak()->Type != RET){
+        instructions->push(new Instruction(LEAVE)); 
+        instructions->push(new Instruction(RET));
     };
 }
 
@@ -355,12 +298,13 @@ Program::Program(Expression* expr){
     this->entry_point = 0;
     this->instructions = new InstructionList();
     this->data_section = strdup("");
-    this->function_labels = new LabelList();
+    this->function_labels = new LabelList(0x1000, true);
     this->var_labels = new LabelList();
     for(int x = 0; x < expr->expressions.length; x++){
         Expression* function_expr = expr->expressions[x];
         parse_function(function_expr);
     }
+    this->function_labels->resolve();
 }
 
 Program::~Program(){

@@ -2,11 +2,22 @@
 #include "bytecode.hpp"
 #include "../frontend/parser.hpp"
 
+struct OffsetList{
+    int** offsets;
+    int length;
+    int index;
+    OffsetList(int size = 0x100);
+    void resolve(int new_val);
+    void push(int* offset);
+    ~OffsetList();
+};
+
 struct Label{
     int offset;
     const char* identifier;
     Label(const char* identif, int _offset);
-    int** updated_offsets;
+    OffsetList* unresolved_offsets;
+    ~Label();
 };
 
 struct LabelList{
@@ -14,9 +25,10 @@ struct LabelList{
     int length;
     int index;
     Label** labels;
-    LabelList(int size = 1000, bool allow_hoisting = false);
+    LabelList(int size = 0x1000, bool allow_hoisting = false);
     void push(Label* label);
-    int find(const char* identifier);
+    void find(const char* identifier, int* offset);
+    void resolve();
     void empty();
     int peak();
     ~LabelList();
