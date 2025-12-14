@@ -248,7 +248,7 @@ int main (int argc,char**argv ){
 	try{
 		vm = new VirtualMachine(program->entry_point, program->data_section, 1000, 20);
 		vm->Run(program->instructions, show_log);
-		printf("Program terminated with exit code: %d\n",vm->Registers[RegisterType::AX]);
+		if(show_exit_code) printf("Program terminated with exit code: %d\n",vm->Registers[RegisterType::RAX]);
 	} catch(const char* message){
 		printf("Runtime Error: %s\n",message);
 		return -1;
