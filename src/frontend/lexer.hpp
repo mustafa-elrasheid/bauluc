@@ -8,7 +8,7 @@
 namespace Lexer{
     char* create_str(const char* str1, int length);
     int check_prefix(const char* text, const char* prefix);
-    const char* check_keywords(const char* text, const char** keywords);
+    const char* check_keywords(const char* text, const char** keywords, bool ret_keyword = false);
     int count_tokens(const char* text, const char** keywords);
 
     enum TokenType{

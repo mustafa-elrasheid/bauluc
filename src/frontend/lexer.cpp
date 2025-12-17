@@ -41,10 +41,13 @@ int Lexer::check_prefix(const char* text, const char* prefix){
 	return text_index;
 }
 
-const char* Lexer::check_keywords(const char* text, const char** keywords){
+const char* Lexer::check_keywords(const char* text, const char** keywords, bool ret_keyword){
 	for(int i = 0; keywords[i] != NULL; i++){
 		int prefix_length = check_prefix(text, keywords[i]);
-		if(prefix_length != 0) return create_str(text, prefix_length);
+		if(prefix_length != 0){
+			if(ret_keyword) return create_str(text, prefix_length);
+			else return (const char*)1;
+		}
 	}
 	return NULL;
 }
@@ -74,7 +77,7 @@ Lexer::TokenList::TokenList(const char* text,const char** keywords){
 	Token** tokens = (Token**)malloc((count_tokens(text, keywords)+1) * sizeof(Token*));
 	int token_count = 0;
 	for(int index = 0; text[index] != '\0'; token_count++){
-		const char* keyword = check_keywords(text+index, keywords);
+		const char* keyword = check_keywords(text+index, keywords, true);
 		if(keyword != NULL){
 			tokens[token_count] = new Token(keyword, OPERATOR);
 			index += strlen(keyword);
